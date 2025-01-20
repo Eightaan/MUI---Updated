@@ -207,7 +207,7 @@ function MUILabel:get_name()
 			result = managers.localization:text("menu_" .. self:criminal().name);
 		elseif (self._muiClean == 3) or (self._muiClean == 2 and result:len() > 20) then
 			result = ArmStatic.clean_name(result);
-			result = result:len() > 0 and result or "The Unparseable";
+			result = result:len() > 0 and result or self.character_name;
 		end
 	end
 	if self._muiLevel and self.level > 0 then
