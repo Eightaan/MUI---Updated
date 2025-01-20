@@ -25,8 +25,9 @@ function MUILegend:init(hud)
 	};
 	self._icon = panel:bitmap({
 		name = "icon",
-		texture = "guis/textures/pd2/specialization/icons_atlas",
-		texture_rect = {327,7,50,50}
+		--texture = "guis/textures/pd2/specialization/icons_atlas",
+		--texture_rect = {327,7,50,50}
+		texture = "guis/textures/pd2/hud_icon_objectivebox"
 	});
 	self._font = ArmStatic.font_index(self._muiFont);
 	self._cor = ArmStatic.correction_index(self._muiFont);

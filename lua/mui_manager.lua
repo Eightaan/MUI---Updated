@@ -121,7 +121,6 @@ if pdoclass("MUITeammate", "lua/mui_team.lua") and
 			end
 		end
 	end
-	--
 
 	function HUDManager:set_teammate_revives(i, revives)
 		self._teammate_panels[i]:set_revives(revives);
@@ -477,8 +476,7 @@ if pdoclass("MUIChat", "lua/mui_chat.lua") then
 
 	function HUDManager:_create_hud_chat_access()
 		local full = MUIMenu._data.mui_workspace == 2;
-		local hud = self:script(full and IngameAccessCamera.GUI_FULLSCREEN or
-				IngameAccessCamera.GUI_SAFERECT);
+		local hud = self:script(full and IngameAccessCamera.GUI_FULLSCREEN or IngameAccessCamera.GUI_SAFERECT);
 		local ws = self._mui_ws;
 		if self._hud_chat_access then self._hud_chat_access:remove(); end
 		self._hud_chat_access = MUIChat:new(ws, hud);

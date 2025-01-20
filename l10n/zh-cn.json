@@ -245,5 +245,10 @@
 	"mui_font_s" : "小",
 	"mui_font_m" : "中",
 	"mui_font_ms" : "中等阴影",
-	"mui_font_l" : "大"
+	"mui_font_l" : "大",
+	
+	"mui_disable_leech_support_title" : "Disable Leech Ampule Indicator",
+	"mui_disable_leech_support_desc" : "Disables Leech Ampule Support Entirely",
+	"mui_enable_health_numbers_title" : "Show Health and Armor Numbers",
+	"mui_enable_health_numbers_desc" : "Freyah /// Show health and Armor numbers in the center of health circle"
 }

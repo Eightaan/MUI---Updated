@@ -33,17 +33,6 @@
 		},
 		{
 			"type" : "multiple_choice",
-			"id" : "mui_ammo",
-			"callback" : "mui_floored_callback",
-			"items" : [
-				"mui_ammo_default",
-				"mui_ammo_exclude",
-				"mui_ammo_clip"
-			],
-			"default_value" : 1
-		},
-		{
-			"type" : "multiple_choice",
 			"id" : "mui_direction",
 			"callback" : "mui_floored_callback",
 			"items" : [

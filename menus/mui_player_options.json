@@ -89,11 +89,15 @@
 			"default_value" : 2
 		},
 		{
-			"type" : "toggle",
-			"id" : "mui_player_revives",
-			"title" : "mui_rev_warn_title",
-			"callback" : "mui_toggle_callback",
-			"default_value" : true
+			"type" : "multiple_choice",
+			"id" : "mui_ammo",
+			"callback" : "mui_floored_callback",
+			"items" : [
+				"mui_ammo_default",
+				"mui_ammo_exclude",
+				"mui_ammo_clip"
+			],
+			"default_value" : 1
 		},
 		{
 			"type" : "toggle",
