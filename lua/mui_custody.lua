@@ -4,6 +4,7 @@
 -- License GPLv3 <https://www.gnu.org/licenses/>
 --
 -- Inquiries should be submitted by email to <mui@amaranth.red>.
+-- Stockholm syndrome wont hide the trade panel
 --------
 _G.MUICustody = _G.MUICustody or class();
 
@@ -163,8 +164,9 @@ function MUICustody:set_trade_delay(time)
 	time = math.floor(time);
 	if time == self._last_trd_chr then return; end
 
+	local space = string.rep(" ", 10);
 	self._last_trd_chr = time;
-	self._trd_chr:set_text( format_time(time) );
+	self._trd_chr:set_text( format_time(time) .. space);
 	self:set_delay_visibility(time > 0);
 	self:set_trade_state(time == 0);
 	self:eval_visible();
@@ -172,7 +174,7 @@ end
 
 function MUICustody:set_civilians_killed(amount)
 	self._civ_amount:set_text(string.format("%02d", amount));
-	self._info_list:set_visible_panel(self._civ_panel, amount > 0);
+	--self._info_list:set_visible_panel(self._civ_panel, amount > 0);
 end
 
 function MUICustody:show(instant)
