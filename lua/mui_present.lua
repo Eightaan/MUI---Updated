@@ -188,7 +188,7 @@ function MUIPresent.toggle_layer(force_state)
 	local items = muipst._items;
 	local rmc = ArmStatic.remove_corners;
 	local cac = ArmStatic.create_corners;
-	
+
 	if force_state == false or panel:layer() > 0 then
 		muipst._enabled = true;
 		for i, item in ipairs(items) do

@@ -18,7 +18,6 @@ MUIMenu._class = nil;
 MUIMenu._class_table = {};
 MUIMenu._class_enabled = nil;
 
-
 function MUIMenu:Save()
 	local file = io.open( self._data_path, "w+" );
 	if file then

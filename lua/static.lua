@@ -278,7 +278,6 @@ function ArmStatic.table_set(tbl, val, keys)
 	end
 end
 
-
 function ArmStatic.toggle_info(force_hide)
 	local player_hud = managers.hud:script(PlayerBase.PLAYER_INFO_HUD_PD2);
 	if not player_hud then return; end

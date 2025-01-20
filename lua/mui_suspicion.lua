@@ -86,7 +86,7 @@ function MUISuspicion:init(hud, sound_source)
 		});
 		flip_tex_h(susp_left);
 	end]]
-	
+
 	local icon_panel = panel:panel({ name = "icon_panel" });
 	self._icon_panel = icon_panel;
 
@@ -210,7 +210,6 @@ function MUISuspicion:show(instant)
 	sp:animate(callback(self, self, "_animate", instant));
 end
 
-
 function MUISuspicion:hide(instant)
 	if not instant and not self._visible then return; end
 	self._visible = false;
@@ -223,7 +222,6 @@ function MUISuspicion:stop()
 	self._panel:stop();
 	self._susp_detect:stop();
 end
-
 
 function MUISuspicion:feed_value(value)
 	if self._freeze then return; end
@@ -272,7 +270,6 @@ function MUISuspicion.discovered_pulse(o)
 	end
 end
 
-
 function MUISuspicion.load_options(force_load)
 	if MUISuspicion._options and not force_load then return; end
 	
@@ -310,17 +307,16 @@ function MUISuspicion:resize()
 	local assets = MUIMenu:Assets();
 	
 	local sp = self._panel;
-		local spb = self._susp_bars;
-			local spl = self._susp_left;
-			local spr = self._susp_right;
-			--local splf = self._susp_left_fill;
-			--local sprf = self._susp_right_fill;
-		local ip = self._icon_panel;
-			local spd = self._susp_detect;
-			local eye = self._eye;
-			local xlm = self._exclaim;
-			local sXlm = (assets and xlm:texture_width() >= 128 and 2.3) or 1;
-
+	local spb = self._susp_bars;
+	local spl = self._susp_left;
+	local spr = self._susp_right;
+	--local splf = self._susp_left_fill;
+	--local sprf = self._susp_right_fill;
+	local ip = self._icon_panel;
+	local spd = self._susp_detect;
+	local eye = self._eye;
+	local xlm = self._exclaim;
+	local sXlm = (assets and xlm:texture_width() >= 128 and 2.3) or 1;
 
 	Figure(sp):view(alpha):shape(size):align(hPos, vPos, hMargin, vMargin):spank();
 	
@@ -331,13 +327,12 @@ function MUISuspicion:resize()
 	Figure(spd):rect(s12):align(2);
 	Figure(eye):view(vEye):shape(s12):align(2, 3);
 	Figure(xlm):view(vExclaim):shape(s12 * sXlm):align(2, 1);
-
 end
 
 function MUISuspicion.resize_all()
 	local mui_suspicion = managers.hud._hud_suspicion;
 	if not mui_suspicion then return; end
-	
+
 	MUISuspicion.load_options(true);
 	mui_suspicion:resize();
 	ArmStatic.align_corners(mui_suspicion._panel);
@@ -346,7 +341,7 @@ end
 function MUISuspicion.toggle_layer(force_state)
 	local mui_suspicion = managers.hud._hud_suspicion;
 	if not mui_suspicion then return; end
-	
+
 	local panel = mui_suspicion._panel;
 	if force_state == false or panel:layer() > 1 then
 		mui_suspicion:hide(true);

@@ -45,7 +45,6 @@ function MUIVoice:init(voice_data)
 	self:resize();
 end
 
-
 function MUIVoice.load_options(force_load)
 	if MUIVoice._options and not force_load then return; end
 	
@@ -61,7 +60,6 @@ function MUIVoice.load_options(force_load)
 	MUIVoice._muiFont = data.mui_font_pref or 4;
 	MUIVoice._options = true;
 end
-
 
 function MUIVoice:resize()
 	local panel = self._panel;
@@ -155,7 +153,6 @@ function MUIVoice:mouse_moved(o, x, y)
 	end
 end
 
-
 -- Close and/or play sound bound to clicked list-item.
 function MUIVoice:mouse_clicked(o, button, x, y)
 	if button ~= Idstring("0") or not self._panel:inside(x, y) then
@@ -181,7 +178,6 @@ function MUIVoice.toggle()
 		mui_voice:show();
 	end
 end
-
 
 function MUIVoice.resize_all()
 	local mui_voice = managers.hud._mui_voice;
