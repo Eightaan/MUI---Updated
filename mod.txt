@@ -1,0 +1,29 @@
+{
+	"name": "MUI",
+	"description": "Minimalistic, scalable UI mod aimed at experienced players.",
+	"image": "img/mui.png",
+	"color": "0 255 255",
+	"version": "44.1.4",
+	"author": "Armithaig; currently maintained by The Trashmann; Fixed by Freyah",
+	"contact": "mui@amaranth.red",
+	"pre_hooks": [
+		{
+			"hook_id": "lib/setups/gamesetup",
+			"script_path": "lua/static.lua"
+		},
+		{
+			"hook_id": "lib/setups/gamesetup",
+			"script_path": "lua/figure.lua"
+		}
+	],
+	"hooks": [
+		{
+			"hook_id": "lib/managers/hudmanagerpd2",
+			"script_path": "lua/mui_manager.lua"
+		},
+		{
+			"hook_id": "lib/managers/menumanager",
+			"script_path": "lua/mui_menu.lua"
+		}
+	]
+}
