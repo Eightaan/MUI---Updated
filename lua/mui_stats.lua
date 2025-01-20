@@ -24,13 +24,12 @@ function MUIStats:init()
 	});
 	self._panel = panel;
 	self._colours = {
-		ass =  managers.job:is_current_job_professional() and tweak_data.screen_colors.pro_color or tweak_data.screen_colors.risk,
-		vip = Color(1, 0.43, 0.63, 0.8) };
+	ass =  managers.job:is_current_job_professional() and tweak_data.screen_colors.pro_color or tweak_data.screen_colors.risk,
+	vip = Color(1, 0.43, 0.63, 0.8) };
 	self._assault_mode = "normal";
 	self._last_time = 0;
 	self._last_host = 0;
-	
-	
+
 	local top_panel = panel:panel({
 		layer = 1,
 		name = "top_panel"
@@ -49,28 +48,28 @@ function MUIStats:init()
 		visible = false
 	});
 	self._assault_panel = assault_panel;
-		local skull_text = "";
-		for i = 1, managers.job:current_difficulty_stars() do
-			skull_text = skull_text .. managers.localization:get_default_macro("BTN_SKULL") .. " ";
-		end
-		assault_panel:text({
-			name = "risk",
-			font = tweak_data.menu.pd2_large_font, -- skull icon exists only in standard fonts
-			text = skull_text,
-			color = self._colours.ass
-		});
-		assault_panel:text({
-			name = "title",
-			font = muiFont,
-			text = managers.localization:to_upper_text(tweak_data.difficulty_name_id),
-			color = self._colours.ass
-		});
-		assault_panel:bitmap({
-			name = "icon",
-			texture = "guis/textures/pd2/hud_buff_shield",
-			visible = false,
-			color = self._colours.ass
-		});
+	local skull_text = "";
+	for i = 1, managers.job:current_difficulty_stars() do
+		skull_text = skull_text .. managers.localization:get_default_macro("BTN_SKULL") .. " ";
+	end
+	assault_panel:text({
+		name = "risk",
+		font = tweak_data.menu.pd2_large_font, -- skull icon exists only in standard fonts
+		text = skull_text,
+		color = self._colours.ass
+	});
+	assault_panel:text({
+		name = "title",
+		font = muiFont,
+		text = managers.localization:to_upper_text(tweak_data.difficulty_name_id),
+		color = self._colours.ass
+	});
+	assault_panel:bitmap({
+		name = "icon",
+		texture = "guis/textures/pd2/hud_buff_shield",
+		visible = false,
+		color = self._colours.ass
+	});
 
 	local supplements = AnimatedList:new(top_panel, { align = 3, direction = 1, aspd = 1, margin = 12 });
 	self._supplement_list = supplements;
@@ -121,6 +120,22 @@ function MUIStats:init()
 		name = "amount",
 		font = muiFont,
 		text = "0/0"
+	});
+	local cv_icon, cv_rect = tweak_data.hud_icons:get_icon_data("minions_converted");
+	local converts_panel = supplements:panel({
+		layer = 1,
+		name = "converts_panel"
+	});
+	self._converts_panel = converts_panel;
+	converts_panel:bitmap({
+		name = "icon",
+		texture = cv_icon,
+		texture_rect = cv_rect
+	});
+	converts_panel:text({
+		name = "amount",
+		font = muiFont,
+		text = "0"
 	});
 	local wave_panel = supplements:panel({
 		layer = 1,
@@ -227,7 +242,7 @@ function MUIStats:load_state()
 	local groupai_state = tunnel(managers, "groupai", "state");
 	if groupai_state then
 		self:on_whisper_mode_changed(groupai_state:whisper_mode());
-		self:on_pager_bluff()
+		self:on_pager_bluff();
 		self:set_wave(0);
 		groupai_state:add_listener("MUIStats_whisper_mode",
 			{"whisper_mode"},
@@ -236,7 +251,7 @@ function MUIStats:load_state()
 			self:sync_start_assault(groupai_state:get_assault_number());
 		end
 	end
-	
+
 	local hook_function = function()
 		setup:add_end_frame_clbk(callback(self, self, "loot_value_updated"));
 	end
@@ -285,25 +300,25 @@ function MUIStats:resize()
 	local vPos = self._muiVPos;
 	
 	local panel = self._panel;
-		local top = self._top_panel;
-			local time = self._heist_time;
-			local assault = self._assault_panel;
-			local supplements = self._supplement_list;
-				local hostages = self._hostages_panel;
-				local bodybags = self._bodybags_panel;
-				local pagers = self._pagers_panel;
-				local wave = self._wave_panel;
-		local obj = self._objectives_panel;
-		local loot = self._loot_panel;
-			
-			
+	local top = self._top_panel;
+	local time = self._heist_time;
+	local assault = self._assault_panel;
+	local supplements = self._supplement_list;
+	local hostages = self._hostages_panel;
+	local bodybags = self._bodybags_panel;
+	local pagers = self._pagers_panel;
+	local converts = self._converts_panel;
+	local wave = self._wave_panel;
+	local obj = self._objectives_panel;
+	local loot = self._loot_panel;
+
 	local width = size*wMul;
-	
+
 	-- top
 	Figure(top):shape(width, s33);
 	Figure(time):rect(s33);
 	Figure(assault):progeny(line, s33):adapt():align(2, 1);
-	Figure({hostages,bodybags,pagers,wave}):progeny(line, s33):adapt();
+	Figure({hostages,bodybags,pagers,converts,wave}):progeny(line, s33):adapt();
 	Figure(supplements):shape(width, s33):align(3, 1); -- TODO: elude(assault)
 	supplements:set_margin(size/7)
 	supplements:reposition();
@@ -313,22 +328,22 @@ function MUIStats:resize()
 	-- loot
 	Figure(loot):shape(width, s33*2):attach(obj, 3);
 	self:resize_loot();
-		
+
 	Figure(panel):view(alpha):adapt(loot):align(hPos, vPos, hMargin, vMargin);
 	self._real_x, self._real_y = panel:position();
 end
 
 function MUIStats:resize_objectives()
 	local s33 = self._muiSize / 3;
-	
+
 	local obj = self._objectives_panel;
-		local title = obj:child("title");
-		local amount = obj:child("amount");
-		local desc = obj:child("description");
-		
+	local title = obj:child("title");
+	local amount = obj:child("amount");
+	local desc = obj:child("description");
+
 	local width = obj:w();
 	local indent = width * 0.05;
-	
+
 	Figure(title):rect(s33);
 	Figure(amount):rect(s33):attach(title, 2, s33):fill();
 	Figure(desc):shape(width - indent, size, s33):attach(title, 3):shift(indent);
@@ -336,15 +351,15 @@ end
 
 function MUIStats:resize_loot()
 	local s33 = self._muiSize/3;
-	
+
 	local loot = self._loot_panel;
-		local secured = loot:child("title");
-		local cash = loot:child("text");
-		local bag = self._bag_panel;
-		local gage = loot:child("gage_icon");
-		local g = loot:child("gage_text");
-		local packages = loot:child("gage_amount");
-	
+	local secured = loot:child("title");
+	local cash = loot:child("text");
+	local bag = self._bag_panel;
+	local gage = loot:child("gage_icon");
+	local g = loot:child("gage_text");
+	local packages = loot:child("gage_amount");
+
 	local indent = loot:w() * 0.05;
 
 	Figure(secured):rect(s33);
@@ -365,7 +380,6 @@ function MUIStats.resize_all()
 	ArmStatic.align_corners(stats._panel);
 end
 
-
 function MUIStats.toggle_layer(force_state)
 	local stats = managers.hud._hud_statsscreen;
 	if not stats then
@@ -383,7 +397,6 @@ function MUIStats.toggle_layer(force_state)
 	end
 end
 
-
 function MUIStats:_animate(data)
 	local panel = self._panel;
 	local anim = MUIStats._muiAnim;
@@ -399,7 +412,7 @@ function MUIStats:_animate(data)
 	};
 	local anim_x = anim_dir[anim][1];
 	local anim_y = anim_dir[anim][2];
-	
+
 	local t = 0;
 	local end_t = instant and 0 or MUIStats._muiASPD;
 	if state then
@@ -427,9 +440,19 @@ function MUIStats:_animate(data)
 	end
 end
 
+function MUIStats:on_convert()
+	local is_whisper_mode = managers.groupai and managers.groupai:state():whisper_mode();
+	if not is_whisper_mode and managers.player:has_category_upgrade("player", "convert_enemies") then
+		local text = self._converts_panel:child("amount");
+		text:set_text(tostring(managers.player:num_local_minions()));
+	else
+		self._converts_panel:set_visible(false);
+	end
+end
 
 function MUIStats:show(instant)
 	self._panel:stop();
+	self:on_convert(); -- Very dumb way of handling this but oh well..
 	self._panel:animate(callback(self, self, "_animate", {true, instant}));
 end
 function MUIStats:hide(instant)
@@ -539,11 +562,11 @@ function MUIStats:loot_value_updated()
 	local required, bonus = 0, 0;
 	local total_value = 0;
 	local packages, remaining = self:count_gage_units();
-	
+
 	local stars = job:has_active_job() and job:current_difficulty_stars() or 0;
 	local bag_mul = managers.player:upgrade_value("player", "secured_bags_money_multiplier", 1) / money_tweak("offshore_rate");
 	local bonus_mul = money_tweak("difficulty_multiplier", stars + 1) or 1;
-	
+
 	for _, data in ipairs(secured) do
 		local value = carry.small_loot[data.carry_id];
 		if not value then
@@ -560,7 +583,7 @@ function MUIStats:loot_value_updated()
 		total_value = total_value + value;
 	end
 	total_value = math.floor(total_value * 0.001);
-	
+
 	local text = tostring(bonus);
 	if mandatory >= 1 then
 		text = format("%d/%d %s", required, mandatory, bonus > 0 and "+" .. bonus or "");
@@ -634,7 +657,6 @@ function MUIStats:no_return()
 	return self._no_return;
 end
 
-
 function MUIStats.assault_pulse(o)
 	o:set_alpha(0);
 	o:set_visible(true);
@@ -668,8 +690,6 @@ function MUIStats:sync_start_assault(wave)
 	panel:animate(callback(panel, self, "assault_pulse"));
 	self:set_wave(wave);
 end
-
-
 
 function MUIStats:sync_end_assault()
 	local panel = self._assault_panel;
