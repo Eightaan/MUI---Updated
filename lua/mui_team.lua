@@ -1411,7 +1411,7 @@ function MUITeammate:set_health(data)
 			self._custardy = true;
 			-- self:set_revives(4);
 			self._info_list:set_visible_panel(self._muiRevS and not self._main_player and self._revives_icon, false);
-			self._info_list:set_visible_panel(self._muiStam and self._main_player and self._stamina_icon:visible() and self._stamina_icon, false);
+			self._info_list:set_visible_panel(self._muiStam and self._main_player and self._revives and self._revives < 2 and self._stamina_icon:visible() and self._stamina_icon, false);
 		-- else
 			-- self._crimedad = true;
 		-- end
@@ -1709,5 +1709,5 @@ function MUITeammate:set_custom_radial(data)
 	local r = data.current / data.total;
 	radial_custom:set_color(Color(1, r, 1, 1));
 	radial_custom:set_visible(r > 0);
-	self._info_list:set_visible_panel(self._muiStam and self._main_player and self._revives < 2 and r > 0 and self._stamina_icon:visible() and self._stamina_icon, false);
+	self._info_list:set_visible_panel(self._muiStam and self._main_player and self._revives and self._revives < 2 and r and r > 0 and self._stamina_icon:visible() and self._stamina_icon, false);
 end
