@@ -1326,12 +1326,12 @@ end
 -- Set local revives variable and display warning if last life.
 function MUITeammate:set_revives(revives)
 --	revives = revives or self._revives-1;
-	local player = self._main_player and MUITeammate._muiRevL
-	local team = MUITeammate._muiRevS and not self._main_player
+	local player = self._main_player and self._muiRevL
+	local team = self._muiRevS and not self._main_player
 	local visible = team or player
 	self._info_list:set_visible_panel(visible and self._revives_icon, revives == 1);
 --	self._down = false;
---	self._revives = revives;
+	self._revives = revives;
 end
 
 -- Find and/or return criminal for panel
@@ -1358,7 +1358,7 @@ function MUITeammate:remove_panel()
 	self._absorb_shield:set_color(Color.black);
 	self._delayed_health:set_color(Color.black);
 	self._delayed_shield:set_color(Color.black);
-	self._info_list:set_visible_panel(MUITeammate._muiRevS and not self._main_player and self._revives_icon, false);
+	self._info_list:set_visible_panel(self._muiRevS and not self._main_player and self._revives_icon, false);
 	if self._radial_rip then self._radial_rip:hide(); end
 	self:set_cheater(false);
 	self:set_info_meter({
@@ -1410,9 +1410,8 @@ function MUITeammate:set_health(data)
 			-- if data.no_hint then
 			self._custardy = true;
 			-- self:set_revives(4);
-			if MUITeammate._muiRevS and not self._main_player then
-				self._info_list:set_visible_panel(self._revives_icon, false);
-			end
+			self._info_list:set_visible_panel(self._muiRevS and not self._main_player and self._revives_icon, false);
+			self._info_list:set_visible_panel(self._muiStam and self._main_player and self._stamina_icon:visible() and self._stamina_icon, false);
 		-- else
 			-- self._crimedad = true;
 		-- end
@@ -1710,4 +1709,5 @@ function MUITeammate:set_custom_radial(data)
 	local r = data.current / data.total;
 	radial_custom:set_color(Color(1, r, 1, 1));
 	radial_custom:set_visible(r > 0);
+	self._info_list:set_visible_panel(self._muiStam and self._main_player and self._revives < 2 and r > 0 and self._stamina_icon:visible() and self._stamina_icon, false);
 end

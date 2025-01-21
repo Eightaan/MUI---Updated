@@ -137,7 +137,6 @@ function MUIChat.load_options(force_load)
 	MUIChat._options = true;
 end
 
-
 function MUIChat:resize()
 	local size = self._muiSize;
 	local alpha = self._muiAlpha;
@@ -152,12 +151,12 @@ function MUIChat:resize()
 	local vMargin = self._muiVMargin;
 
 	local panel = self._panel;
-		local output = self._output_panel;
-		local input = self._input_panel;
-			local say = input:child("say");
-			local text = input:child("input_text");
-			local caret = input:child("caret");
-			local bg = input:child("input_bg");
+	local output = self._output_panel;
+	local input = self._input_panel;
+	local say = input:child("say");
+	local text = input:child("input_text");
+	local caret = input:child("caret");
+	local bg = input:child("input_bg");
 
 	Figure(output):shape(s200, box * rows);
 	Figure(input):shape(s200, box):attach(output, 3);
@@ -243,7 +242,6 @@ function MUIChat:receive_message(name, message, color, icon)
 		output_panel:animate(callback(self, self, "_animate_fade_output"));
 	end
 end
-
 
 function MUIChat.toggle_layer(force_state)
 	local chating = managers.hud._hud_chat_ingame;
