@@ -124,6 +124,7 @@ function MUIStats:init()
 	local cv_icon, cv_rect = tweak_data.hud_icons:get_icon_data("minions_converted");
 	local converts_panel = supplements:panel({
 		layer = 1,
+		visible = false,
 		name = "converts_panel"
 	});
 	self._converts_panel = converts_panel;
@@ -442,12 +443,12 @@ end
 
 function MUIStats:on_convert()
 	local is_whisper_mode = managers.groupai and managers.groupai:state():whisper_mode();
-	if not is_whisper_mode and managers.player:has_category_upgrade("player", "convert_enemies") then
-		local text = self._converts_panel:child("amount");
-		text:set_text(tostring(managers.player:num_local_minions()));
-	else
-		self._converts_panel:set_visible(false);
-	end
+	local converts_enabled = not is_whisper_mode and managers.player:has_category_upgrade("player", "convert_enemies");
+	local panel = self._converts_panel;
+	local text = panel:child("amount");
+
+	self._supplement_list:set_visible_panel(panel, converts_enabled);
+	text:set_text(tostring(managers.player:num_local_minions()));
 end
 
 function MUIStats:show(instant)
