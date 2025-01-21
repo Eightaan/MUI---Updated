@@ -1326,7 +1326,10 @@ end
 -- Set local revives variable and display warning if last life.
 function MUITeammate:set_revives(revives)
 --	revives = revives or self._revives-1;
-	self._info_list:set_visible_panel(MUITeammate._muiRevS and not self._main_player and self._revives_icon, revives == 1);
+	local player = self._main_player and MUITeammate._muiRevL
+	local team = MUITeammate._muiRevS and not self._main_player
+	local visible = team or player
+	self._info_list:set_visible_panel(visible and self._revives_icon, revives == 1);
 --	self._down = false;
 --	self._revives = revives;
 end
