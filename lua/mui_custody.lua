@@ -225,11 +225,11 @@ function MUICustody:resize()
 	local vPos = self._muiVPos;
 	
 	local sp = self._panel;
-		local spt = self._title;
-		local spil = self._info_list;
-			local spcp = self._civ_panel;
-			local sptp = self._trd_panel;
-			local sprp = self._res_panel;
+	local spt = self._title;
+	local spil = self._info_list;
+	local spcp = self._civ_panel;
+	local sptp = self._trd_panel;
+	local sprp = self._res_panel;
 
 	-- Scale panel title.
 	Figure(spt):shape(s400, size/2.5);
