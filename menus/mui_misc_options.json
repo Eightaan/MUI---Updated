@@ -56,6 +56,12 @@
 			"default_value" : false
 		},
 		{
+			"type" : "toggle",
+			"id" : "mui_enable_center_team_revives",
+			"callback" : "mui_toggle_callback",
+			"default_value" : false
+		},
+		{
 			"type" : "divider",
 			"size" : "10"
 		},

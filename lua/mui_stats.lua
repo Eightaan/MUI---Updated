@@ -260,6 +260,13 @@ function MUIStats:load_state()
 	Hooks:PostHook(GageAssignmentManager, "activate_assignments", "MUIStats_act_ass", hook_function);
 	Hooks:PostHook(LootManager, "set_mandatory_bags_data", "MUIStats_man_bags", hook_function);
 
+	local hook_function = function()
+		setup:add_end_frame_clbk(callback(self, self, "on_convert")); 
+	end
+	Hooks:PostHook(PlayerManager, "count_up_player_minions", "MUIStats_count_up_plyr_min", hook_function);
+	Hooks:PostHook(PlayerManager, "count_down_player_minions", "MUIStats_count_dwn_plyr_min", hook_function);
+	Hooks:PostHook(PlayerManager, "reset_minions", "MUIStats_reset_min", hook_function);
+
 	hook_function = function()
 		setup:add_end_frame_clbk(callback(self, self, "on_pager_bluff"));
 	end
@@ -453,7 +460,6 @@ end
 
 function MUIStats:show(instant)
 	self._panel:stop();
-	self:on_convert(); -- Very dumb way of handling this but oh well..
 	self._panel:animate(callback(self, self, "_animate", {true, instant}));
 end
 function MUIStats:hide(instant)

@@ -826,7 +826,7 @@ function MUITeammate:resize()
 	Figure(condition):shape(size):leech(player):attach(carry, 3);
 	Figure(timer):shape(sTimer):leech(condition):align(2);
 
-	if not MUIMenu._data.mui_enable_health_numbers and not self._main_player then
+	if MUIMenu._data.mui_enable_center_team_revives and not MUIMenu._data.mui_enable_health_numbers and not self._main_player then
 		Figure(info):shape(size/3):leech(condition):align(2):spank(s33);
 	else
 		Figure(info):shape(s66, s33):leech(player):align(3, 1):spank(s33);
