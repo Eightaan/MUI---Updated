@@ -32,20 +32,21 @@ local function MUISetNewHealthValue(self)
 end
 
 local function MUISetNewArmorValue(self)
-	if not MUIMenu._data.mui_enable_health_numbers then return; end
-	if self._armor_numbers then
-		local data = self._armor_data;
-		local Value = math.clamp(data.current / data.total, 0, 1);
-		local real_value = math.round((data.total * 10) * Value);
-		self._armor_numbers:set_text(real_value);
-		self._armor_numbers:set_color(Color(48/255, 141/255, 255/255), Color.black:with_alpha(0.5))
-		self._armor_numbers:set_font_size(self._health_numbers:font_size());
-		if real_value <= 0 then
-			self._armor_numbers:hide()
-		else
-			self._armor_numbers:show()
-		end
-	end
+    if not MUIMenu._data.mui_enable_health_numbers then return; end
+    if self._armor_numbers then
+        local data = self._armor_data;
+        local Value = math.clamp(data.current / data.total, 0, 1);
+        if Value ~= Value then self._armor_numbers:hide() return end
+        local real_value = math.round((data.total * 10) * Value);
+        self._armor_numbers:set_text(real_value);
+        self._armor_numbers:set_color(Color(48/255, 141/255, 255/255), Color.black:with_alpha(0.5))
+        self._armor_numbers:set_font_size(self._health_numbers:font_size());
+        if real_value <= 0 then
+            self._armor_numbers:hide()
+        else
+            self._armor_numbers:show()
+        end
+    end
 end
 
 local function MUIResized(self,size)
@@ -69,7 +70,7 @@ local function MUIResized(self,size)
 	if not self._health_numbers then
 		local health_numbers = self._radial_health_panel:text({
 			name = "health_numbers",
-			text = "nil",
+			text = "",
 			font = self._font,
 			font_size = 18,
 			color = Color.white,
@@ -84,7 +85,7 @@ local function MUIResized(self,size)
 	if not self._armor_numbers then
 		local armor_numbers = self._radial_health_panel:text({
 			name = "armor_numbers",
-			text = "nil",
+			text = "",
 			font = self._font,
 			font_size = 18,
 			color = Color.white,
@@ -1607,7 +1608,7 @@ function MUITeammate:update_absorb()
 end
 
 function MUITeammate:update_delayed_damage()
-	if self._delayed_old + self._delayed_damage ~= 0 then
+	if not MUIMenu._data.mui_enable_health_numbers and self._delayed_old + self._delayed_damage ~= 0 then
 		self:set_radial_overlay(self._delayed_health, self._delayed_shield, self._delayed_damage or 0);
 		self._delayed_old = self._delayed_damage;
 	end
