@@ -302,7 +302,7 @@ function MUITeammate:create_radial_panel(parent)
 	});
 	self._radial_health = radial_health;
 
-	if self._muiColor then
+	if self._muiColor and not MUIMenu._data.mui_enable_health_numbers then
 		radial_health:set_blend_mode("sub");
 		panel:bitmap({
 			name = "radial_health_fill",
