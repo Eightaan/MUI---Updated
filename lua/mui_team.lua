@@ -16,11 +16,13 @@ ArmStatic.void(MUITeammate, {
 
 local function MUISetNewHealthValue(self)
 	if not MUIMenu._data.mui_enable_health_numbers then return; end
+	local size = self._main_player and self._muiSizeL or self._muiSizeS;
 	if self._health_numbers then
 		local data = self._health_data;
 		local Value = math.clamp(data.current / data.total, 0, 1);
 		local real_value = math.round((data.total * 10) * Value);
 		self._health_numbers:set_text(real_value);
+		self._health_numbers:set_font_size((size/3) + 12);
 		if real_value > 35 then
 			self._health_numbers:set_color(Color(71/255, 255/255, 120/255), Color.black:with_alpha(0.5))
 		elseif real_value < 35 then
@@ -37,6 +39,7 @@ local function MUISetNewArmorValue(self)
 		local real_value = math.round((data.total * 10) * Value);
 		self._armor_numbers:set_text(real_value);
 		self._armor_numbers:set_color(Color(48/255, 141/255, 255/255), Color.black:with_alpha(0.5))
+		self._armor_numbers:set_font_size(self._health_numbers:font_size());
 		if real_value <= 0 then
 			self._armor_numbers:hide()
 		else
