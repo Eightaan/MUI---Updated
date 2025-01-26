@@ -401,15 +401,15 @@ function MUITeammate:create_radial_panel(parent)
 		blend_mode = "add",
 		layer = 5
 	});
-	self._info_meter = panel:bitmap({
-		name = "radial_info_meter",
-		visible = false,
-		color = Color.black,
-		texture = "guis/dlcs/coco/textures/pd2/hud_absorb_stack_fg",
-		render_template = "VertexColorTexturedRadial",
-		blend_mode = "add",
-		layer = 5
-	});
+	-- self._info_meter = panel:bitmap({ --Why is this done twice?
+		-- name = "radial_info_meter",
+		-- visible = false,
+		-- color = Color.black,
+		-- texture = "guis/dlcs/coco/textures/pd2/hud_absorb_stack_fg",
+		-- render_template = "VertexColorTexturedRadial",
+		-- blend_mode = "add",
+		-- layer = 5
+	-- });
 
 	if not MUIMenu._data.mui_disable_leech_support then
 		self.copr_overlay_panel = panel:panel({
@@ -1578,6 +1578,8 @@ function MUITeammate:countdown(time)
 	o:set_text(format("%02d", old_t));
 	local r, b = Color.red, o:color();
 	while t > 0 do
+	self._health_numbers:hide()
+	self._armor_numbers:hide()
 		dt = coroutine.yield();
 		if self._timer_paused == 0 then
 			t = t - dt;
@@ -1591,6 +1593,8 @@ function MUITeammate:countdown(time)
 			end
 		end
 	end
+	self._health_numbers:show()
+	self._armor_numbers:show()
 end
 
 MUITeammate._mui_base.set_absorb_active = MUITeammate.set_absorb_active;
@@ -1693,7 +1697,8 @@ end
 
 function MUITeammate:set_info_meter(data)
 	local rim = self._info_meter;
-	rim:set_visible(data.total > 0);
+	local visible = MUIMenu._data.mui_team_coco_stack or self._main_player
+	rim:set_visible(visible and data.total > 0);
 	self:set_radial(rim, data.current, data.max, self._muiHPASPD);
 end
 

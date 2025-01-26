@@ -104,6 +104,12 @@
 		},
 		{
 			"type" : "toggle",
+			"id" : "mui_team_coco_stack",
+			"callback" : "mui_toggle_callback",
+			"default_value" : true
+		},
+		{
+			"type" : "toggle",
 			"id" : "mui_team_ai",
 			"callback" : "mui_toggle_callback",
 			"default_value" : true
