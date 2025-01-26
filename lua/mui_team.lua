@@ -1578,8 +1578,8 @@ function MUITeammate:countdown(time)
 	o:set_text(format("%02d", old_t));
 	local r, b = Color.red, o:color();
 	while t > 0 do
-	self._health_numbers:hide()
-	self._armor_numbers:hide()
+	if self._health_number then self._health_numbers:hide() end
+	if self._armor_numbers then self._armor_numbers:hide() end
 		dt = coroutine.yield();
 		if self._timer_paused == 0 then
 			t = t - dt;
@@ -1593,8 +1593,8 @@ function MUITeammate:countdown(time)
 			end
 		end
 	end
-	self._health_numbers:show()
-	self._armor_numbers:show()
+	if self._health_number then self._health_numbers:show() end
+	if self._armor_numbers then self._armor_numbers:show() end
 end
 
 MUITeammate._mui_base.set_absorb_active = MUITeammate.set_absorb_active;
