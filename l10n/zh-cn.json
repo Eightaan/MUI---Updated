@@ -250,7 +250,7 @@
 	"mui_disable_leech_support_title" : "Disable Leech Ampule Indicator",
 	"mui_disable_leech_support_desc" : "Disables Leech Ampule Support Entirely",
 	"mui_enable_health_numbers_title" : "Show Health and Armor Numbers",
-	"mui_enable_health_numbers_desc" : "Freyah /// Show health and Armor numbers in the center of health circle",
+	"mui_enable_health_numbers_desc" : "Show health and Armor numbers in the center of health circle",
 	"mui_enable_center_team_revives_title" : "Center Team Revives Warning",
 	"mui_enable_center_team_revives_desc" : "Moves the revive warning for teammates to the center of the health radial",
 	"mui_trade_delay_title" : "Trade Delay Notification",
