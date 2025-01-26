@@ -1609,7 +1609,10 @@ function MUITeammate:set_absorb_active(absorb_amount)
 end
 
 function MUITeammate:update_absorb()
-	if self._absorb_old + self._absorb_active_amount ~= 0 then
+	local player = self._main_player and self._muiAbsL
+	local team = self._muiAbsS and not self._main_player
+	local visible = team or player
+	if visible and self._absorb_old + self._absorb_active_amount ~= 0 then
 		self:set_radial_overlay(self._absorb_health, self._absorb_shield, self._absorb_active_amount or 0);
 		self._absorb_old = self._absorb_active_amount;
 	end
