@@ -16,17 +16,18 @@ ArmStatic.void(MUITeammate, {
 
 local function MUISetNewHealthValue(self)
 	if not MUIMenu._data.mui_enable_health_numbers then return; end
-	local size = self._main_player and self._muiSizeL or self._muiSizeS;
 	if self._health_numbers then
 		local data = self._health_data;
 		local Value = math.clamp(data.current / data.total, 0, 1);
 		local real_value = math.round((data.total * 10) * Value);
 		self._health_numbers:set_text(real_value);
-		self._health_numbers:set_font_size((size/3) + 12);
 		if real_value > 35 then
+			self._health_numbers:show()
 			self._health_numbers:set_color(Color(71/255, 255/255, 120/255), Color.black:with_alpha(0.5))
-		elseif real_value < 35 then
+		elseif real_value < 35 and not self._custardy then
 			self._health_numbers:set_color(Color.red:with_alpha(0.8))
+		elseif self._custardy then
+			self._health_numbers:hide()
 		end
 	end
 end
@@ -40,8 +41,7 @@ local function MUISetNewArmorValue(self)
         local real_value = math.round((data.total * 10) * Value);
         self._armor_numbers:set_text(real_value);
         self._armor_numbers:set_color(Color(48/255, 141/255, 255/255), Color.black:with_alpha(0.5))
-        self._armor_numbers:set_font_size(self._health_numbers:font_size());
-        if real_value <= 0 then
+        if real_value <= 0 or self._custardy then
             self._armor_numbers:hide()
         else
             self._armor_numbers:show()
@@ -49,7 +49,7 @@ local function MUISetNewArmorValue(self)
     end
 end
 
-local function MUIResized(self,size)
+local function MUIResized(self)
 	if not self._radial_health_panel then return; end
 	if not MUIMenu._data.mui_enable_health_numbers then
 		self._radial_health_panel:child("radial_health"):show()
@@ -62,18 +62,13 @@ local function MUIResized(self,size)
 	self._radial_health_panel:child("radial_health"):hide()
 	self._radial_health_panel:child("radial_shield"):hide()
 
-	DelayedCalls:Add("DelayedUpdateFontSize", 0.1, function()
-		self._health_numbers:set_font_size((size/3) + 12);
-		self._armor_numbers:set_font_size(self._health_numbers:font_size());
-	end)
-
 	if not self._health_numbers then
 		local health_numbers = self._radial_health_panel:text({
 			name = "health_numbers",
 			text = "",
 			font = self._font,
 			font_size = 18,
-			color = Color.white,
+			color = Color.red,
 			align = "center",
 			vertical = "top",
 			layer = 3,
@@ -88,7 +83,7 @@ local function MUIResized(self,size)
 			text = "",
 			font = self._font,
 			font_size = 18,
-			color = Color.white,
+			color = Color.red,
 			align = "center",
 			vertical = "bottom",
 			layer = 3,
@@ -788,7 +783,7 @@ function MUITeammate:resize()
 	local total = s33 * row;
 	self._mui_size = size;
 
-	MUIResized(self, size);
+	MUIResized(self);
 
 	local panel = self._panel;
 	local name = self._name;
@@ -834,6 +829,11 @@ function MUITeammate:resize()
 		Figure(info):shape(size/3):leech(condition):align(2):spank(s33);
 	else
 		Figure(info):shape(s66, s33):leech(player):align(3, 1):spank(s33);
+	end
+
+	if MUIMenu._data.mui_enable_health_numbers then
+		self._health_numbers:set_font_size((size/3) + 12);
+		self._armor_numbers:set_font_size(self._health_numbers:font_size());
 	end
 
 	if not self._muiStam and stamina:visible() then info:set_visible_panel(stamina, false); end
@@ -1400,7 +1400,7 @@ end
 function MUITeammate:set_health(data)
 	self._health_data = data;
 	MUISetNewHealthValue(self);
-	-- local dt, dc, dr = data.total, data.current, data.revives;
+
 	local dt, dc = data.total, data.current;
 	local hp, rip = self._radial_health, self._radial_rip;
 	local radial_rip_bg = self.radial_rip_bg;

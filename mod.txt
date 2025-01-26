@@ -3,7 +3,7 @@
 	"description": "Minimalistic, scalable UI mod aimed at experienced players.",
 	"image": "img/mui.png",
 	"color": "0 255 255",
-	"version": "44.1.4",
+	"version": "44.1.6",
 	"author": "Armithaig; currently maintained by The Trashmann; Fixed by Freyah",
 	"contact": "mui@amaranth.red",
 	"pre_hooks": [
