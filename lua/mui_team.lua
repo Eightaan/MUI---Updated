@@ -1578,7 +1578,7 @@ function MUITeammate:countdown(time)
 	o:set_text(format("%02d", old_t));
 	local r, b = Color.red, o:color();
 	while t > 0 do
-	if MUIMenu._data.mui_enable_health_numbers then
+	if MUIMenu._data.mui_enable_health_numbers and (self._health_numbers:visible() or self._armor_numbers:visible()) then
 		self._health_numbers:hide();
 		self._armor_numbers:hide();
 	end
@@ -1609,15 +1609,19 @@ function MUITeammate:set_absorb_active(absorb_amount)
 end
 
 function MUITeammate:update_absorb()
-	local player = self._main_player and self._muiAbsL
-	local team = self._muiAbsS and not self._main_player
-	local visible = team or player
-	if visible and self._absorb_old + self._absorb_active_amount ~= 0 then
-		self:set_radial_overlay(self._absorb_health, self._absorb_shield, self._absorb_active_amount or 0);
-		self._absorb_old = self._absorb_active_amount;
-	end
+    local player = self._main_player and self._muiAbsL
+    local team = self._muiAbsS and not self._main_player
+    local visible = team or player
+    if visible and self._absorb_old + self._absorb_active_amount ~= 0 then
+        self._absorb_health:show();
+        self._absorb_shield:show();
+        self:set_radial_overlay(self._absorb_health, self._absorb_shield, self._absorb_active_amount or 0);
+        self._absorb_old = self._absorb_active_amount;
+    else
+        self._absorb_health:hide()
+        self._absorb_shield:hide()
+    end
 end
-
 function MUITeammate:update_delayed_damage()
 	if not MUIMenu._data.mui_enable_health_numbers and self._delayed_old + self._delayed_damage ~= 0 then
 		self:set_radial_overlay(self._delayed_health, self._delayed_shield, self._delayed_damage or 0);
