@@ -98,41 +98,41 @@ function MUICustody:init(hud)
 	panel:set_alpha(0);
 end
 
-function MUICustody:test_animate()
-	local a = 0;
-	while true do
-		a = a + 1;
-		local t = 0;
-		while t < 2 do
-			t = t + coroutine.yield();
-		end
-		local rand = math.random();
-		if rand <= 0.20 then
-			managers.hud:set_custody_timer_visibility(false)
-		elseif rand <= 0.40 then
-			managers.hud:set_custody_timer_visibility(true)
-			managers.hud:set_custody_respawn_type(true)
-			managers.hud:set_custody_respawn_time(math.random()*30);
+-- function MUICustody:test_animate()
+	-- local a = 0;
+	-- while true do
+		-- a = a + 1;
+		-- local t = 0;
+		-- while t < 2 do
+			-- t = t + coroutine.yield();
+		-- end
+		-- local rand = math.random();
+		-- if rand <= 0.20 then
+			-- managers.hud:set_custody_timer_visibility(false)
+		-- elseif rand <= 0.40 then
+			-- managers.hud:set_custody_timer_visibility(true)
+			-- managers.hud:set_custody_respawn_type(true)
+			-- managers.hud:set_custody_respawn_time(math.random()*30);
 
-		elseif rand <= 0.60 then
-			managers.hud:set_custody_respawn_type(false)
-			managers.hud:set_custody_respawn_time(math.random()*30)
-		elseif rand <= 0.80 then
-			managers.hud:set_custody_civilians_killed(math.random()*80)
-			managers.hud:set_custody_trade_delay(math.random()*180)
-		else
-			managers.hud:set_custody_negotiating_visible(false)
-			managers.hud:set_custody_trade_delay_visible(false)
-		end
-	end
-end
+		-- elseif rand <= 0.60 then
+			-- managers.hud:set_custody_respawn_type(false)
+			-- managers.hud:set_custody_respawn_time(math.random()*30)
+		-- elseif rand <= 0.80 then
+			-- managers.hud:set_custody_civilians_killed(math.random()*80)
+			-- managers.hud:set_custody_trade_delay(math.random()*180)
+		-- else
+			-- managers.hud:set_custody_negotiating_visible(false)
+			-- managers.hud:set_custody_trade_delay_visible(false)
+		-- end
+	-- end
+-- end
 
 
 function MUICustody:set_timer_visibility(visible)
 	if self._timer_visible == visible then return; end
 	self._timer_visible = visible;
 
-	self._info_list:set_visible_panel(self._res_panel, visible);
+	self._info_list:set_visible_panel(not self._delay_visible and self._res_panel, visible);
 end
 
 function MUICustody:set_delay_visibility(visible)
@@ -147,6 +147,9 @@ function MUICustody:set_trade_state(state)
 	self._state = state;
 
 	local id = state and "menu_spectator_being_traded" or "menu_spectator_being_traded_hesitant";
+	if state then
+		self:set_timer_visibility()
+	end
 	self._title:set_text(managers.localization:to_upper_text(id));
 end
 
@@ -164,15 +167,15 @@ function MUICustody:set_trade_delay(time)
 	if time == self._last_trd_chr then return; end
 
 	self._last_trd_chr = time;
-	self._trd_chr:set_text( format_time(time) );
+	self._trd_chr:set_text( format_time(time));
 	self:set_delay_visibility(time > 0);
 	self:set_trade_state(time == 0);
 	self:eval_visible();
 end
 
 function MUICustody:set_civilians_killed(amount)
-	self._civ_amount:set_text(string.format("%02d", amount));
-	self._info_list:set_visible_panel(self._civ_panel, amount > 0);
+	--self._civ_amount:set_text(string.format("%02d", amount));
+	--self._info_list:set_visible_panel(self._civ_panel, amount > 0);
 end
 
 function MUICustody:show(instant)
@@ -185,7 +188,7 @@ function MUICustody:hide(instant)
 	self._panel:stop();
 	self._title:stop();
 	if not instant then fade(self._title, 1); end
-	fade(self._panel, 0, instant and 0 or 8);
+	fade(self._panel, 0, instant and 0 or 4);
 end
 function MUICustody:set_visible(visible, instant)
 	self._visible = visible;
@@ -223,11 +226,11 @@ function MUICustody:resize()
 	local vPos = self._muiVPos;
 	
 	local sp = self._panel;
-		local spt = self._title;
-		local spil = self._info_list;
-			local spcp = self._civ_panel;
-			local sptp = self._trd_panel;
-			local sprp = self._res_panel;
+	local spt = self._title;
+	local spil = self._info_list;
+	local spcp = self._civ_panel;
+	local sptp = self._trd_panel;
+	local sprp = self._res_panel;
 
 	-- Scale panel title.
 	Figure(spt):shape(s400, size/2.5);

@@ -27,6 +27,7 @@ function MUIMenu:Save()
 		file:write( json_enc ~= "[]" and json_enc or "{}" );
 		file:close();
 	end
+	self:Assets();
 end
 
 function MUIMenu:Load()
@@ -52,17 +53,17 @@ function MUIMenu:Clean()
 	end
 end
 
-function MUIMenu:Assets()
-	if self._assets == nil then
-		self._assets = false;
-		local file = io.open( self._asset_test_path, "r" );
-		if file then
-			self._assets = true;
-			file:close();
-		end
-	end
-	return self._assets;
-end
+-- function MUIMenu:Assets()
+	-- if self._assets == nil then
+		-- self._assets = false;
+		-- local file = io.open( self._asset_test_path, "r" );
+		-- if file then
+			-- self._assets = true;
+			-- file:close();
+		-- end
+	-- end
+	-- return self._assets;
+-- end
 
 -------
 -- BLT will hang on "Verifying..." if mod_overrides folder doesn't exist, let's work around that and create it.
@@ -295,9 +296,9 @@ Hooks:Add( "MenuManagerInitialize", "MenuManagerInitialize_MUIMenu", function( m
 		end
 	end
 
-	MenuCallbackHandler.mui_fs_exists_callback = function(self)
-		return MUIMenu:Assets();
-	end
+	-- MenuCallbackHandler.mui_fs_exists_callback = function(self)
+		-- return MUIMenu:Assets();
+	-- end
 
 	MenuCallbackHandler.mui_reset_callback = function (self, item)
 		MUIMenu:ResetItemsToDefaultValues( item, MUIMenu._default_values );

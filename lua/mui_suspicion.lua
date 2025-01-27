@@ -304,7 +304,7 @@ function MUISuspicion:resize()
 	local mBars = self._muiBars;
 	local vEye = self._muiEye;
 	local vExclaim = self._muiExclaim;
-	local assets = MUIMenu:Assets();
+	local assets = MUIMenu._data.mui_custom_textures;
 	
 	local sp = self._panel;
 	local spb = self._susp_bars;

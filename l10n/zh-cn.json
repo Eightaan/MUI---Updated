@@ -256,5 +256,7 @@
 	"mui_trade_delay_title" : "Trade Delay Notification",
 	"mui_trade_delay_desc" : "Display the trade delay when killing civilians",
 	"mui_team_coco_stack_title" : "Display Maniac Stacks",
-	"mui_team_coco_stack_desc" : "Display maniac stacks for teammates"
+	"mui_team_coco_stack_desc" : "Display maniac stacks for teammates",
+	"mui_custom_textures_title" : "Custom Hud textures",
+	"mui_custom_textures_desc" : "Enable the custom MUI textures for the hud\n[REQUIRES GAME RESTART]"
 }

@@ -44,8 +44,8 @@ if pdoclass("MUITeammate", "lua/mui_team.lua") and
 	pdoclass("AnimatedList", "lua/animated_list.lua") then
 
 	function HUDManager:set_teammate_state(i, state)
-		self:set_ai_stopped(i, false)
-		self._teammate_panels[i]:set_state(state)
+		self:set_ai_stopped(i, false);
+		self._teammate_panels[i]:set_state(state);
 	end
 
 	-- 'm fed up with the downed icon bein' a pixel off, AIN'T HAVIN' IT
@@ -603,7 +603,7 @@ if pdoclass("MUIStats", "lua/mui_stats.lua") and pdoclass("AnimatedList", "lua/a
 		self._hud_statsscreen:set_time(time);
 	end
 	function HUDManager:modify_heist_time(time)
-		self._hud_statsscreen:modify_time(time)
+		self._hud_statsscreen:modify_time(time);
 	end
 	function HUDManager:loot_value_updated()
 		self._hud_statsscreen:loot_value_updated();

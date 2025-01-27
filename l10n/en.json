@@ -74,7 +74,7 @@
 	"mui_ammo_exclude" : "Exclude",
 	"mui_ammo_clip" : "Clips",
 	"mui_hp_color_title" : "Coloured Health",
-	"mui_hp_color_desc" : "Set health radials to player colour. Leaves shadow.\n[REQUIRES WHITE TEXTURE & MAP RELOAD]",
+	"mui_hp_color_desc" : "Set health radials to player colour. Leaves shadow.\n[REQUIRES CUSTOM HUD TEXTURES & MAP RELOAD]",
 	"mui_gen_hp_aspd_title" : "Health Anim. Duration",
 	"mui_gen_hp_aspd_desc" : "Set the time player health takes to animate on damage/restore in milliseconds.\n0 disables animation.",
 	"mui_gen_sh_aspd_title" : "Shield Anim. Duration",
@@ -256,5 +256,7 @@
 	"mui_trade_delay_title" : "Trade Delay Notification",
 	"mui_trade_delay_desc" : "Display the trade delay when killing civilians",
 	"mui_team_coco_stack_title" : "Display Maniac Stacks",
-	"mui_team_coco_stack_desc" : "Display maniac stacks for teammates"
+	"mui_team_coco_stack_desc" : "Display maniac stacks for teammates",
+	"mui_custom_textures_title" : "Custom Hud textures",
+	"mui_custom_textures_desc" : "Enable the custom MUI textures for the hud\n[REQUIRES GAME RESTART]"
 }

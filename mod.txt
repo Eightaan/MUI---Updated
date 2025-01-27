@@ -32,6 +32,14 @@
 		{
 			"hook_id": "lib/managers/trademanager",
 			"script_path": "lua/trade.lua"
+		},
+		{
+			"hook_id": "lib/managers/playermanager",
+			"script_path": "lua/hide_custody.lua"
+		},
+		{
+			"hook_id": "lib/setups/setup",
+			"script_path": "lua/assets.lua"
 		}
 	]
 }
