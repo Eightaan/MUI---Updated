@@ -258,5 +258,11 @@
 	"mui_team_coco_stack_title" : "Display Maniac Stacks",
 	"mui_team_coco_stack_desc" : "Display maniac stacks for teammates",
 	"mui_custom_textures_title" : "Custom Hud textures",
+	"mui_stats_crime_spree_title" : "Display Crime spree level",
+	"mui_stats_accuracy_title" : "Display Total Accuracy",
+	"mui_stats_accuracy_desc" : "Displays total accuracy in the stat display.",
+	"mui_stats_kills_title" : "Display Total Kills",
+	"mui_stats_kills_desc" : "Displays total kills in the stat display.",
+	"mui_stats_crime_spree_desc" : "Replace the difficulty name with the current crime spree level.",
 	"mui_custom_textures_desc" : "Enable the custom MUI textures for the hud\n[REQUIRES GAME RESTART]"
 }

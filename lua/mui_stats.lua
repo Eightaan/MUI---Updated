@@ -22,13 +22,28 @@ function MUIStats:init()
 		name = "stats_panel",
 		visible = false
 	});
+	
+	self._assault_color = tweak_data.screen_colors.risk;
+	self._vip_assault_color = Color(1, 0.43, 0.63, 0.8);
+	
+	if managers.mutators:are_mutators_active() then
+		local mutator_color = managers.mutators:get_category_color(managers.mutators:get_enabled_active_mutator_category());
+		self._assault_color = mutator_color;
+		self._vip_assault_color = Color(mutator_color.a, mutator_color.b, mutator_color.g, mutator_color.r);
+	end
+
+	if managers.skirmish:is_skirmish() then
+		self._assault_color = tweak_data.screen_colors.skirmish_color;
+	end
+	
 	self._panel = panel;
 	self._colours = {
-	ass =  managers.job:is_current_job_professional() and tweak_data.screen_colors.pro_color or tweak_data.screen_colors.risk,
-	vip = Color(1, 0.43, 0.63, 0.8) };
+	ass = self._assault_color,
+	vip = self._vip_assault_color };
 	self._assault_mode = "normal";
 	self._last_time = 0;
 	self._last_host = 0;
+	self._is_crimespree = self._muiCrimeSpree and managers.crime_spree:is_active() or false;
 
 	local top_panel = panel:panel({
 		layer = 1,
@@ -49,8 +64,12 @@ function MUIStats:init()
 	});
 	self._assault_panel = assault_panel;
 	local skull_text = "";
-	for i = 1, managers.job:current_difficulty_stars() do
-		skull_text = skull_text .. managers.localization:get_default_macro("BTN_SKULL") .. " ";
+	if self._is_crimespree then
+		skull_text = skull_text .. managers.localization:to_upper_text("menu_cs_level", {level = managers.experience:cash_string(managers.crime_spree:server_spree_level(), "")});
+	else
+		for i = 1, managers.job:current_difficulty_stars() do
+			skull_text = skull_text .. managers.localization:get_default_macro("BTN_SKULL") .. " ";
+		end
 	end
 	assault_panel:text({
 		name = "risk",
@@ -61,7 +80,7 @@ function MUIStats:init()
 	assault_panel:text({
 		name = "title",
 		font = muiFont,
-		text = managers.localization:to_upper_text(tweak_data.difficulty_name_id),
+		text = self._is_crimespree and "" or managers.localization:to_upper_text(tweak_data.difficulty_name_id),
 		color = self._colours.ass
 	});
 	assault_panel:bitmap({
@@ -73,6 +92,38 @@ function MUIStats:init()
 
 	local supplements = AnimatedList:new(top_panel, { align = 3, direction = 1, aspd = 1, margin = 12 });
 	self._supplement_list = supplements;
+	local kill_count_panel = supplements:panel({
+		layer = 1,
+		visible = false,
+		name = "kill_count_panel"
+	});
+	self._kill_count_panel = kill_count_panel;
+	kill_count_panel:bitmap({
+		name = "icon",
+		texture = "guis/textures/pd2/skilltree/icons_atlas",
+		texture_rect = {6 * 64, 11 * 64, 64, 64}
+	});
+	kill_count_panel:text({
+		name = "amount",
+		font = muiFont,
+		text = "0"
+	});
+	local accuracy_panel = supplements:panel({
+		layer = 1,
+		visible = false,
+		name = "accuracy_panel"
+	});
+	self._accuracy_panel = accuracy_panel;
+	accuracy_panel:bitmap({
+		name = "icon",
+		texture = "guis/textures/pd2/pd2_waypoints",
+		texture_rect = { 96, 0, 32, 32 }
+	});
+	accuracy_panel:text({
+		name = "amount",
+		font = muiFont,
+		text = "0%"
+	});
 	local hostages_panel = supplements:panel({
 		layer = 1,
 		name = "hostages_panel"
@@ -263,6 +314,7 @@ function MUIStats:load_state()
 	local hook_function = function()
 		setup:add_end_frame_clbk(callback(self, self, "on_convert")); 
 	end
+
 	Hooks:PostHook(PlayerManager, "count_up_player_minions", "MUIStats_count_up_plyr_min", hook_function);
 	Hooks:PostHook(PlayerManager, "count_down_player_minions", "MUIStats_count_dwn_plyr_min", hook_function);
 	Hooks:PostHook(PlayerManager, "reset_minions", "MUIStats_reset_min", hook_function);
@@ -272,6 +324,16 @@ function MUIStats:load_state()
 	end
 	Hooks:PostHook(GroupAIStateBase, "on_successful_alarm_pager_bluff", "MUIStats_pager_bluff", hook_function);
 	Hooks:PostHook(GroupAIStateBase, "sync_alarm_pager_bluff", "MUIStats_pager_sync", hook_function);
+	
+	local hook_function = function()
+		setup:add_end_frame_clbk(callback(self, self, "hit_accuracy")); 
+	end
+	Hooks:PostHook(managers.statistics, "shot_fired", "MUIStats_hit_accuracy", hook_function);
+	
+	local hook_function = function()
+		setup:add_end_frame_clbk(callback(self, self, "on_kill")); 
+	end
+	Hooks:PostHook(PlayerManager, "on_killshot", "MUIStats_on_kill", hook_function);
 end
 
 function MUIStats.load_options(force_load)
@@ -289,6 +351,9 @@ function MUIStats.load_options(force_load)
 	MUIStats._muiHPos = data.mui_stats_h_pos or 1;
 	MUIStats._muiVPos = data.mui_stats_v_pos or 1;
 	MUIStats._muiFont = data.mui_font_pref or 4;
+	MUIStats._muiCrimeSpree = data.mui_stats_crime_spree ~= false;
+	MUIStats._muiAccuracy = data.mui_stats_accuracy == true;
+	MUIStats._muiKills = data.mui_stats_kills == true;
 	MUIStats._options = true;
 end
 
@@ -316,6 +381,8 @@ function MUIStats:resize()
 	local bodybags = self._bodybags_panel;
 	local pagers = self._pagers_panel;
 	local converts = self._converts_panel;
+	local kills = self._kill_count_panel;
+	local accuracy = self._accuracy_panel;
 	local wave = self._wave_panel;
 	local obj = self._objectives_panel;
 	local loot = self._loot_panel;
@@ -326,7 +393,7 @@ function MUIStats:resize()
 	Figure(top):shape(width, s33);
 	Figure(time):rect(s33);
 	Figure(assault):progeny(line, s33):adapt():align(2, 1);
-	Figure({hostages,bodybags,pagers,converts,wave}):progeny(line, s33):adapt();
+	Figure({kills,accuracy,hostages,bodybags,pagers,converts,wave}):progeny(line, s33):adapt();
 	Figure(supplements):shape(width, s33):align(3, 1); -- TODO: elude(assault)
 	supplements:set_margin(size/7)
 	supplements:reposition();
@@ -456,6 +523,24 @@ function MUIStats:on_convert()
 
 	self._supplement_list:set_visible_panel(panel, converts_enabled);
 	text:set_text(tostring(managers.player:num_local_minions()));
+end
+
+function MUIStats:hit_accuracy()
+	local accuracy_panel_enabled = self._muiAccuracy;
+	local panel = self._accuracy_panel;
+	local text = panel:child("amount");
+	self._supplement_list:set_visible_panel(panel, accuracy_panel_enabled);
+	text:set_text(managers.statistics:session_hit_accuracy().."%");
+	self:resize();
+end
+
+function MUIStats:on_kill()
+	local kill_count_panel_enabled = self._muiKills;
+	local panel = self._kill_count_panel
+	local text = panel:child("amount");
+	self._supplement_list:set_visible_panel(panel, kill_count_panel_enabled);
+	text:set_text(managers.statistics:MUITotalKills());
+	self:resize();
 end
 
 function MUIStats:show(instant)

@@ -125,6 +125,28 @@
 			"size" : "10"
 		},
 		{
+			"type" : "toggle",
+			"id" : "mui_stats_crime_spree",
+			"callback" : "mui_toggle_callback",
+			"default_value" : true
+		},
+		{
+			"type" : "toggle",
+			"id" : "mui_stats_accuracy",
+			"callback" : "mui_toggle_callback",
+			"default_value" : false
+		},
+		{
+			"type" : "toggle",
+			"id" : "mui_stats_kills",
+			"callback" : "mui_toggle_callback",
+			"default_value" : false
+		},
+		{
+			"type" : "divider",
+			"size" : "10"
+		},
+		{
 			"type" : "button",
 			"id" : "mui_reset",
 			"callback" : "mui_reset_callback"

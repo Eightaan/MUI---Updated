@@ -84,6 +84,13 @@
 	"mui_stats_options_desc" : "Customizations that affect the stats (TAB) panel.",
 	"mui_stats_origin_desc" : "Set the position the panel should be brought in from;\ntop, right, bottom, left.",
 	"mui_stats_aspd_desc" : "Set the time the panel takes to enter view in milliseconds.\n0 disables animation.",
+	"mui_stats_crime_spree_title" : "Display Crime spree level",
+	"mui_stats_crime_spree_desc" : "Replace the difficulty name with the current crime spree level.",
+	"mui_stats_accuracy_title" : "Display Total Accuracy",
+	"mui_stats_accuracy_desc" : "Displays total accuracy in the stat display.",
+	"mui_stats_kills_title" : "Display Total Kills",
+	"mui_stats_kills_desc" : "Displays total kills in the stat display.",
+
 	
 	"mui_keybind_options_title" : "Keybinds",
 	"mui_keybind_options_desc" : "Customize what keys are bound to functions run in-game.",
