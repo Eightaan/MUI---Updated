@@ -126,6 +126,12 @@
 		},
 		{
 			"type" : "toggle",
+			"id" : "mui_stats_achievements",
+			"callback" : "mui_toggle_callback",
+			"default_value" : false
+		},
+		{
+			"type" : "toggle",
 			"id" : "mui_stats_crime_spree",
 			"callback" : "mui_toggle_callback",
 			"default_value" : true

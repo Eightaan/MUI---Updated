@@ -258,6 +258,8 @@
 	"mui_team_coco_stack_title" : "Display Maniac Stacks",
 	"mui_team_coco_stack_desc" : "Display maniac stacks for teammates",
 	"mui_custom_textures_title" : "Custom Hud textures",
+	"mui_stats_achievements_title" : "Display Tracked Achievements",
+	"mui_stats_achievements_desc" : "Replace the objective description with a list of tracked achievements.",
 	"mui_stats_crime_spree_title" : "Display Crime Spree Level",
 	"mui_stats_active_mutators_title" : "Display Active Mutators",
 	"mui_stats_active_mutators_desc" : "Replace the objective description with a list of current active mutators.",

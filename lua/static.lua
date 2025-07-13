@@ -167,7 +167,7 @@ end
 function ArmStatic.set_padded_amount(text, amount, alt)
 	alt = alt or 0;
 
-    text:set_text(alt > 0 and format("%d|%d", math.min(amount, 14), math.min(alt, 9)) or format("%02d", amount));
+	text:set_text(alt > 0 and format("%d|%d", math.min(amount, 14), math.min(alt, 9)) or format("%02d", amount));
 
     if alt > 0 then
         text:set_range_color(2, 0, text:color():with_alpha(0.5));

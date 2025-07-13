@@ -263,17 +263,20 @@ function MUIStats:init()
 	loot_panel:bitmap({
 		name = "gage_icon",
 		texture = g_text,
-		texture_rect = g_rect
+		texture_rect = g_rect,
+		visible = false
 	});
 	loot_panel:text({
 		name = "gage_text",
 		font = muiFont,
-		text = "G"
+		text = "G",
+		visible = false
 	});
 	loot_panel:text({
 		name = "gage_amount",
 		font = muiFont,
-		text = "0"
+		text = "0",
+		visible = false
 	});
 	loot_panel:text({
 		layer = 1,
@@ -284,51 +287,59 @@ function MUIStats:init()
 	self:resize();
 	self:hide(true);
 	self:load_state();
+
 	self._mutators_active = managers.mutators:are_mutators_active() and self._muiMutator;
+	self._achievements = managers.achievment:get_tracked_fill() and #managers.achievment:get_tracked_fill() > 0 and self._muiAchievements;
+
 	if self._mutators_active then
 		self:mutators();
 	end
+
+	if self._achievements then
+		self:tracked_achievements();
+	end
 end
 
-function MUIStats:mutators()
-	local panel = self._objectives_panel;
-	local description = panel:child("description");
-	if not description then return end
+function MUIStats:tracked_achievements()
+    local panel = self._objectives_panel;
+    local description = panel:child("description");
+    if not description then return end
 
-	local mutator_names = {};
-	for i, active_mutator in ipairs(managers.mutators:active_mutators()) do
-		local name = active_mutator.mutator:name();
-		table.insert(mutator_names, name);
-	end
+    local tracked = managers.achievment:get_tracked_fill() or {};
+    local lines = {};
 
-	local mutator_count = #mutator_names;
-	local first_line = "";
-	local remaining = "";
+    local title = managers.localization:text("hud_stats_tracked");
+    local title = title:gsub("(%a)([%w_']*)", 
+		function(first_letter, rest)
+			return first_letter:upper() .. rest:lower()
+		end) 
+	.. ":";
 
-	if mutator_count >= 5 then
-		first_line = "Active Mutators: " .. mutator_names[1];
-		if mutator_count > 1 then
-			for i = 2, mutator_count do
-				mutator_names[i] = "    " .. mutator_names[i];
-			end
-			remaining = "\n" .. table.concat(mutator_names, "\n", 2);
-		end
-	else
-		first_line = "Active Mutators:";
-		if mutator_count > 0 then
-			for i = 1, mutator_count do
-				mutator_names[i] = "    " .. mutator_names[i];
-			end
-			remaining = "\n" .. table.concat(mutator_names, "\n");
-		else
-			remaining = "None";
-		end
-	end
+    table.insert(lines, title);
 
-	local text = first_line .. remaining;
-	description:set_text(text);
+    for i = 1, math.min(#tracked, 4) do
+        local id = tracked[i];
+        local info = managers.achievment:get_info(id);
+        local visual = tweak_data.achievement.visual[id];
+        local prog = visual and visual.progress;
+        local current = prog and prog:get();
+        local max = prog and (type(prog.max) == "function" and prog:max() or prog.max);
+        local name = managers.localization:text(visual.name_id);
+        local space = "    ";
 
-	self:apply_mutator_font_size(description, mutator_count);
+        local line;
+        if info and info.awarded then
+            line = space .. name .. " (Completed)";
+        elseif max and max > 0 then
+            line = space .. name .. " (" .. (current or 0) .. "/" .. max .. ")";
+        else
+            line = space .. name;
+        end
+
+        table.insert(lines, line);
+    end
+
+    description:set_text(table.concat(lines, "\n"));
 end
 
 function MUIStats:apply_mutator_font_size(description, total_lines)
@@ -402,6 +413,13 @@ function MUIStats:load_state()
 		setup:add_end_frame_clbk(callback(self, self, "on_kill")); 
 	end
 	Hooks:PostHook(PlayerManager, "on_killshot", "MUIStats_on_kill", hook_function);
+	
+	local hook_function = function()
+		if self._achievements then
+			setup:add_end_frame_clbk(callback(self, self, "tracked_achievements"));
+		end
+	end
+	Hooks:PostHook(AchievmentManager, "update", "MUIStats_UpdateTrackedAchievements", hook_function);
 end
 
 function MUIStats.load_options(force_load)
@@ -419,6 +437,7 @@ function MUIStats.load_options(force_load)
 	MUIStats._muiHPos = data.mui_stats_h_pos or 1;
 	MUIStats._muiVPos = data.mui_stats_v_pos or 1;
 	MUIStats._muiFont = data.mui_font_pref or 4;
+	MUIStats._muiAchievements = data.mui_stats_achievements == true;
 	MUIStats._muiCrimeSpree = data.mui_stats_crime_spree ~= false;
 	MUIStats._muiMutator = data.mui_stats_active_mutators == true;
 	MUIStats._muiMusic = data.mui_stats_heist_track == true;
@@ -633,9 +652,12 @@ function MUIStats:set_objective(data)
 	self:set_objective_amount(data);
 	panel:child("title"):set_text(utf8.to_upper(objective.text));
 
-	if not self._mutators_active then
+	if not self._mutators_active and not self._achievements then
 		local description_text = objective.description or "";
-		local heist_track = self._muiMusic and "\n\n" .. managers.localization:text("menu_es_playing_track") .. " " .. managers.music:current_track_string() or ""; 
+		local track_name = managers.music:current_track_string();
+		track_name = track_name:sub(1,1):upper() .. track_name:sub(2):lower();
+		local heist_track = self._muiMusic and "\n\n" .. managers.localization:text("menu_es_playing_track") .. " " .. track_name or "";
+
 		panel:child("description"):set_text(description_text .. heist_track);
 	end
 
@@ -724,6 +746,8 @@ function MUIStats:loot_value_updated()
 	local acquired = bag:child("amount");
 	local cash = loot:child("text");
 	local gage = loot:child("gage_amount");
+	local gage_icon = loot:child("gage_icon");
+	local g = loot:child("gage_text");
 
 	local job = managers.job;
 	local global = managers.loot._global;
@@ -763,7 +787,14 @@ function MUIStats:loot_value_updated()
 
 	acquired:set_text(text);
 	cash:set_text(managers.experience:cash_string(total_value).."K");
+
+	if packages > 0 then
+		gage_icon:set_visible(true);
+		g:set_visible(true);
+		gage:set_visible(true);
+	end
 	gage:set_text(format("%d/%d", packages - remaining, packages));
+
 	self:resize_loot();
 end
 
