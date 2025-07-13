@@ -126,6 +126,12 @@
 			"default_value" : false
 		},
 		{
+			"type" : "toggle",
+			"id" : "mui_disable_leech_support",
+			"callback" : "mui_toggle_callback",
+			"default_value" : false
+		},
+		{
 			"type" : "divider",
 			"size" : "10"
 		},

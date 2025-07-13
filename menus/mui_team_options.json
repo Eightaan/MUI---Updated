@@ -97,6 +97,12 @@
 		},
 		{
 			"type" : "toggle",
+			"id" : "mui_enable_center_team_revives",
+			"callback" : "mui_toggle_callback",
+			"default_value" : false
+		},
+		{
+			"type" : "toggle",
 			"id" : "mui_team_absorb",
 			"title" : "mui_coco_abs_title",
 			"callback" : "mui_toggle_callback",

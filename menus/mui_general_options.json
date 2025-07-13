@@ -142,6 +142,16 @@
 			"size" : "10"
 		},
 		{
+			"type" : "toggle",
+			"id" : "mui_enable_health_numbers",
+			"callback" : "mui_toggle_callback",
+			"default_value" : false
+		},
+		{
+			"type" : "divider",
+			"size" : "10"
+		},
+		{
 			"type" : "button",
 			"id" : "mui_reset",
 			"callback" : "mui_reset_callback"

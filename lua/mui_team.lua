@@ -849,6 +849,9 @@ function MUITeammate:resize()
 	self:redisplay_ammo(1);
 	self:redisplay_ammo(2);
 	self:update_absorb(true);
+	if self._current_equipment_panel then
+        self:set_equipment_amount(self._current_equipment_panel, self._current_equipment_amount, self._current_equipment_alt);
+    end
 end
 
 function MUITeammate:resize_wait()
@@ -1005,11 +1008,24 @@ function MUITeammate:set_callsign(id)
 end
 
 function MUITeammate:set_equipment_amount(panel, amount, alt)
-	local text = panel:child("amount");
-	alt = self._main_player and alt or 0; amount = amount or 0;
+    local text = panel:child("amount");
+    alt = self._main_player and alt or 0;
+    amount = amount or 0;
 
-	self._equipment_list:set_visible_panel(panel, amount + alt > 0);
-	set_pam(text, amount, alt);
+    self._current_equipment_amount = amount;
+    self._current_equipment_alt = alt;
+    self._current_equipment_panel = panel;
+
+    if self._main_player then
+        if alt > 0 and amount >= 10 then
+            text:set_font_size(self._muiSizeL / 4);
+        else
+            text:set_font_size(self._muiSizeL / 3);
+        end
+    end
+
+    self._equipment_list:set_visible_panel(panel, amount + alt > 0);
+    set_pam(text, amount, alt);
 end
 
 function MUITeammate:set_cable_ties_amount(amount)

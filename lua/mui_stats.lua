@@ -214,7 +214,7 @@ function MUIStats:init()
 		name = "title",
 		font = muiFont,
 		color = Color.white,
-		text = managers.localization:to_upper_text("dialog_wait"),
+		text = managers.localization:to_upper_text("hud_objective").." "..managers.localization:to_upper_text("dialog_wait"),
 	});
 	objectives_panel:text({
 		name = "amount",
@@ -284,7 +284,75 @@ function MUIStats:init()
 	self:resize();
 	self:hide(true);
 	self:load_state();
+	self._mutators_active = managers.mutators:are_mutators_active() and self._muiMutator; -- and new setting
+	if self._mutators_active then
+		self:mutators();
+	end
 end
+
+function MUIStats:mutators()
+	local panel = self._objectives_panel;
+	local description = panel:child("description");
+	if not description then return end
+
+	local mutator_names = {};
+	for i, active_mutator in ipairs(managers.mutators:active_mutators()) do
+		local name = active_mutator.mutator:name();
+		table.insert(mutator_names, name);
+	end
+
+	local mutator_count = #mutator_names;
+	local first_line = "";
+	local remaining = "";
+
+	if mutator_count >= 5 then
+		first_line = "Active Mutators: " .. mutator_names[1];
+		if mutator_count > 1 then
+			for i = 2, mutator_count do
+				mutator_names[i] = "    " .. mutator_names[i];
+			end
+			remaining = "\n" .. table.concat(mutator_names, "\n", 2);
+		end
+	else
+		first_line = "Active Mutators:";
+		if mutator_count > 0 then
+			for i = 1, mutator_count do
+				mutator_names[i] = "    " .. mutator_names[i];
+			end
+			remaining = "\n" .. table.concat(mutator_names, "\n");
+		else
+			remaining = "None";
+		end
+	end
+
+	local text = first_line .. remaining;
+	description:set_text(text);
+
+	self:apply_mutator_font_size(description, mutator_count);
+end
+
+function MUIStats:apply_mutator_font_size(description, total_lines)
+	local s33 = self._muiSize / 3;
+
+	if total_lines <= 5 then
+		description:set_font_size(s33);
+		return
+	end
+
+	local extra_lines = math.min(total_lines, 9) - 5;
+
+	local scale_map = {
+		[1] = 0.86,
+		[2] = 0.73,
+		[3] = 0.62,
+		[4] = 0.55
+	};
+
+	local scale_factor = scale_map[extra_lines] or 0.55;
+	local font_size = math.floor(s33 * scale_factor);
+	description:set_font_size(font_size);
+end
+
 
 function MUIStats:load_state()
 	local _, active_objective = next(tunnel(managers, "objectives", "get_active_objectives"));
@@ -352,6 +420,8 @@ function MUIStats.load_options(force_load)
 	MUIStats._muiVPos = data.mui_stats_v_pos or 1;
 	MUIStats._muiFont = data.mui_font_pref or 4;
 	MUIStats._muiCrimeSpree = data.mui_stats_crime_spree ~= false;
+	MUIStats._muiMutator = data.mui_stats_active_mutators == true;
+	MUIStats._muiMusic = data.mui_stats_heist_track == true;
 	MUIStats._muiAccuracy = data.mui_stats_accuracy == true;
 	MUIStats._muiKills = data.mui_stats_kills == true;
 	MUIStats._options = true;
@@ -422,6 +492,10 @@ function MUIStats:resize_objectives()
 	Figure(title):rect(s33);
 	Figure(amount):rect(s33):attach(title, 2, s33):fill();
 	Figure(desc):shape(width - indent, size, s33):attach(title, 3):shift(indent);
+	if self._mutators_active then
+		local mutator_count = #managers.mutators:active_mutators();
+		self:apply_mutator_font_size(desc, mutator_count);
+	end
 end
 
 function MUIStats:resize_loot()
@@ -555,10 +629,16 @@ end
 function MUIStats:set_objective(data)
 	local panel = self._objectives_panel;
 	local objective = managers.objectives:get_objective(data.id);
-	
+
 	self:set_objective_amount(data);
 	panel:child("title"):set_text(utf8.to_upper(objective.text));
-	panel:child("description"):set_text(objective.description);
+
+	if not self._mutators_active then
+		local description_text = objective.description or "";
+		local heist_track = self._muiMusic and "\n\n" .. managers.localization:text("menu_es_playing_track") .. " " .. managers.music:current_track_string() or ""; 
+		panel:child("description"):set_text(description_text .. heist_track);
+	end
+
 	self:resize_objectives();
 end
 

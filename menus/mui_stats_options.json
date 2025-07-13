@@ -132,6 +132,22 @@
 		},
 		{
 			"type" : "toggle",
+			"id" : "mui_stats_active_mutators",
+			"callback" : "mui_toggle_callback",
+			"default_value" : false
+		},
+		{
+			"type" : "toggle",
+			"id" : "mui_stats_heist_track",
+			"callback" : "mui_toggle_callback",
+			"default_value" : false
+		},
+		{
+			"type" : "divider",
+			"size" : "10"
+		},
+		{
+			"type" : "toggle",
 			"id" : "mui_stats_accuracy",
 			"callback" : "mui_toggle_callback",
 			"default_value" : false
