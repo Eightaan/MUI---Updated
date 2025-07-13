@@ -342,6 +342,47 @@ function MUIStats:tracked_achievements()
     description:set_text(table.concat(lines, "\n"));
 end
 
+function MUIStats:mutators()
+	local panel = self._objectives_panel;
+	local description = panel:child("description");
+	if not description then return end
+
+	local mutator_names = {};
+	for i, active_mutator in ipairs(managers.mutators:active_mutators()) do
+		local name = active_mutator.mutator:name();
+		table.insert(mutator_names, name);
+	end
+
+	local mutator_count = #mutator_names;
+	local first_line = "";
+	local remaining = "";
+
+	if mutator_count >= 5 then
+		first_line = "Active Mutators: " .. mutator_names[1];
+		if mutator_count > 1 then
+			for i = 2, mutator_count do
+				mutator_names[i] = "    " .. mutator_names[i];
+			end
+			remaining = "\n" .. table.concat(mutator_names, "\n", 2);
+		end
+	else
+		first_line = "Active Mutators:";
+		if mutator_count > 0 then
+			for i = 1, mutator_count do
+				mutator_names[i] = "    " .. mutator_names[i];
+			end
+			remaining = "\n" .. table.concat(mutator_names, "\n");
+		else
+			remaining = "None";
+		end
+	end
+
+	local text = first_line .. remaining;
+	description:set_text(text);
+
+	self:apply_mutator_font_size(description, mutator_count);
+end
+
 function MUIStats:apply_mutator_font_size(description, total_lines)
 	local s33 = self._muiSize / 3;
 
