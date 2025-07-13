@@ -284,7 +284,7 @@ function MUIStats:init()
 	self:resize();
 	self:hide(true);
 	self:load_state();
-	self._mutators_active = managers.mutators:are_mutators_active() and self._muiMutator; -- and new setting
+	self._mutators_active = managers.mutators:are_mutators_active() and self._muiMutator;
 	if self._mutators_active then
 		self:mutators();
 	end
