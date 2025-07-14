@@ -1276,7 +1276,7 @@ function MUITeammate.load_options(force_load)
 	MUITeammate._muiFont = data.mui_font_pref or 4;
 	MUITeammate._muiAmmo = data.mui_ammo or 1;
 	--if MUITeammate._muiColor == nil then
-	MUITeammate._muiColor = MUIMenu._data.mui_custom_textures and data.mui_hp_color ~= false; --or data.mui_hp_color == false;
+	MUITeammate._muiColor = MUIMenu._data.mui_custom_textures and data.mui_hp_color == true; --or data.mui_hp_color == false;
 	--end
 	MUITeammate._options = true;
 end

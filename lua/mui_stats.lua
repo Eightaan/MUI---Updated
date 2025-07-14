@@ -683,6 +683,7 @@ function MUIStats:show(instant)
 	self._panel:animate(callback(self, self, "_animate", {true, instant}));
 	self:loot_value_updated();
 end
+
 function MUIStats:hide(instant)
 	self._panel:stop();
 	self._panel:animate(callback(self, self, "_animate", {false, instant}));

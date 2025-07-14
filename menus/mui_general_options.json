@@ -21,7 +21,7 @@
 			"type" : "toggle",
 			"id" : "mui_hp_color",
 			"callback" : "mui_toggle_callback",
-			"default_func" : false
+			"default_value" : false
 		},
 		{
 			"type" : "toggle",
