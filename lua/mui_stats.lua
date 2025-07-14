@@ -23,7 +23,7 @@ function MUIStats:init()
 		visible = false
 	});
 	
-	self._assault_color = tweak_data.screen_colors.risk;
+	self._assault_color = Global.game_settings.one_down and tweak_data.screen_colors.one_down or tweak_data.screen_colors.risk;
 	self._vip_assault_color = Color(1, 0.43, 0.63, 0.8);
 	
 	if managers.mutators:are_mutators_active() then
@@ -694,12 +694,7 @@ function MUIStats:set_objective(data)
 	panel:child("title"):set_text(utf8.to_upper(objective.text));
 
 	if not self._mutators_active and not self._achievements then
-		local description_text = objective.description or "";
-		local track_name = managers.music:current_track_string();
-		track_name = track_name:sub(1,1):upper() .. track_name:sub(2):lower();
-		local heist_track = self._muiMusic and "\n\n" .. managers.localization:text("menu_es_playing_track") .. " " .. track_name or "";
-
-		panel:child("description"):set_text(description_text .. heist_track);
+		panel:child("description"):set_text(objective.description);
 	end
 
 	self:resize_objectives();
@@ -826,8 +821,12 @@ function MUIStats:loot_value_updated()
 		text = format("%d/%d %s", required, mandatory, bonus > 0 and "+" .. bonus or "");
 	end
 
+	local track_name = managers.music:current_track_string();
+	track_name = track_name:sub(1,1):upper() .. track_name:sub(2):lower();
+	local heist_track = self._muiMusic and string.format("%-6s%s %s", "", managers.localization:text("menu_es_playing_track"), track_name) or "";
+
 	acquired:set_text(text);
-	cash:set_text(managers.experience:cash_string(total_value).."K");
+	cash:set_text(managers.experience:cash_string(total_value).."K".. heist_track);
 
 	if packages > 0 then
 		gage_icon:set_visible(true);
