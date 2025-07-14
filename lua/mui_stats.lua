@@ -300,6 +300,12 @@ function MUIStats:init()
 	end
 end
 
+local function title_case(str)
+	return str:gsub("(%a)([%w_']*)", function(first, rest)
+		return first:upper() .. rest:lower();
+	end)
+end
+
 function MUIStats:tracked_achievements()
     local panel = self._objectives_panel;
     local description = panel:child("description");
@@ -308,12 +314,7 @@ function MUIStats:tracked_achievements()
     local tracked = managers.achievment:get_tracked_fill() or {};
     local lines = {};
 
-    local title = managers.localization:text("hud_stats_tracked");
-    local title = title:gsub("(%a)([%w_']*)", 
-		function(first_letter, rest)
-			return first_letter:upper() .. rest:lower()
-		end) 
-	.. ":";
+	local title = title_case(managers.localization:text("hud_stats_tracked")) .. ":";
 
     table.insert(lines, title);
 
@@ -680,6 +681,7 @@ end
 function MUIStats:show(instant)
 	self._panel:stop();
 	self._panel:animate(callback(self, self, "_animate", {true, instant}));
+	self:loot_value_updated();
 end
 function MUIStats:hide(instant)
 	self._panel:stop();
@@ -822,11 +824,11 @@ function MUIStats:loot_value_updated()
 	end
 
 	local track_name = managers.music:current_track_string();
-	track_name = track_name:sub(1,1):upper() .. track_name:sub(2):lower();
+	track_name = title_case(track_name);
 	local heist_track = self._muiMusic and string.format("%-6s%s %s", "", managers.localization:text("menu_es_playing_track"), track_name) or "";
 
 	acquired:set_text(text);
-	cash:set_text(managers.experience:cash_string(total_value).."K".. heist_track);
+	cash:set_text(managers.experience:cash_string(total_value) .. "K" .. heist_track);
 
 	if packages > 0 then
 		gage_icon:set_visible(true);
