@@ -797,6 +797,7 @@ function MUIStats:loot_value_updated()
 	local required, bonus = 0, 0;
 	local total_value = 0;
 	local packages, remaining = self:count_gage_units();
+	local has_packages = packages > 0
 
 	local stars = job:has_active_job() and job:current_difficulty_stars() or 0;
 	local bag_mul = managers.player:upgrade_value("player", "secured_bags_money_multiplier", 1) / money_tweak("offshore_rate");
@@ -831,10 +832,8 @@ function MUIStats:loot_value_updated()
 	acquired:set_text(text);
 	cash:set_text(managers.experience:cash_string(total_value) .. "K" .. heist_track);
 
-	if packages > 0 then
-		gage_icon:set_visible(true);
-		g:set_visible(true);
-		gage:set_visible(true);
+	for _, gage_count in ipairs({g, gage, gage_icon}) do
+		gage_count:set_visible(has_packages)
 	end
 	gage:set_text(format("%d/%d", packages - remaining, packages));
 
