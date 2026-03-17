@@ -88,51 +88,51 @@ function MUICustody:init(hud)
 		text = "00:00",
 		layer = 0
 	});
-		
+
 	-- Compatibility with IngameWaitingForRespawnState._upd_hud_watch_character_name
 	local spechud = managers.hud:script(Idstring("guis/spectator_mode"));
 	spechud.text_title = spechud.panel:text({name="text_title", visible = false, alpha = 0});
 	--
-		
+
 	self:resize();
 	panel:set_alpha(0);
 end
 
--- function MUICustody:test_animate()
-	-- local a = 0;
-	-- while true do
-		-- a = a + 1;
-		-- local t = 0;
-		-- while t < 2 do
-			-- t = t + coroutine.yield();
-		-- end
-		-- local rand = math.random();
-		-- if rand <= 0.20 then
-			-- managers.hud:set_custody_timer_visibility(false)
-		-- elseif rand <= 0.40 then
-			-- managers.hud:set_custody_timer_visibility(true)
-			-- managers.hud:set_custody_respawn_type(true)
-			-- managers.hud:set_custody_respawn_time(math.random()*30);
+--[[function MUICustody:test_animate()
+	local a = 0;
+	while true do
+		a = a + 1;
+		local t = 0;
+		while t < 2 do
+			t = t + coroutine.yield();
+		end
+		local rand = math.random();
+		if rand <= 0.20 then
+			managers.hud:set_custody_timer_visibility(false)
+		elseif rand <= 0.40 then
+			managers.hud:set_custody_timer_visibility(true)
+			managers.hud:set_custody_respawn_type(true)
+			managers.hud:set_custody_respawn_time(math.random()*30);
 
-		-- elseif rand <= 0.60 then
-			-- managers.hud:set_custody_respawn_type(false)
-			-- managers.hud:set_custody_respawn_time(math.random()*30)
-		-- elseif rand <= 0.80 then
-			-- managers.hud:set_custody_civilians_killed(math.random()*80)
-			-- managers.hud:set_custody_trade_delay(math.random()*180)
-		-- else
-			-- managers.hud:set_custody_negotiating_visible(false)
-			-- managers.hud:set_custody_trade_delay_visible(false)
-		-- end
-	-- end
--- end
+		elseif rand <= 0.60 then
+			managers.hud:set_custody_respawn_type(false)
+			managers.hud:set_custody_respawn_time(math.random()*30)
+		elseif rand <= 0.80 then
+			managers.hud:set_custody_civilians_killed(math.random()*80)
+			managers.hud:set_custody_trade_delay(math.random()*180)
+		else
+			managers.hud:set_custody_negotiating_visible(false)
+			managers.hud:set_custody_trade_delay_visible(false)
+		end
+	end
+end]]--
 
 
 function MUICustody:set_timer_visibility(visible)
 	if self._timer_visible == visible then return; end
 	self._timer_visible = visible;
 
-	self._info_list:set_visible_panel(not self._delay_visible and self._res_panel, visible);
+	self._info_list:set_visible_panel(self._res_panel, visible);
 end
 
 function MUICustody:set_delay_visibility(visible)
@@ -147,29 +147,31 @@ function MUICustody:set_trade_state(state)
 	self._state = state;
 
 	local id = state and "menu_spectator_being_traded" or "menu_spectator_being_traded_hesitant";
-	if state then
-		self:set_timer_visibility()
-	end
+	if state then self:set_timer_visibility(); end
 	self._title:set_text(managers.localization:to_upper_text(id));
 end
 
 function MUICustody:set_respawn_time(time)
+	if self._last_trd_chr and self._last_trd_chr > 0 then return; end
 	time = math.floor(time);
 	if time == self._last_res_chr then return; end
 
 	self._last_res_chr = time;
-	self._res_chr:set_text( format_time(time) );
+	self._res_chr:set_text(format_time(time));
 	self:set_timer_visibility(time > 0);
 	self:eval_visible();
 end
+
 function MUICustody:set_trade_delay(time)
 	time = math.floor(time);
 	if time == self._last_trd_chr then return; end
 
 	self._last_trd_chr = time;
-	self._trd_chr:set_text( format_time(time));
+	self._trd_chr:set_text(format_time(time));
 	self:set_delay_visibility(time > 0);
 	self:set_trade_state(time == 0);
+
+	if time > 0 then self._info_list:set_visible_panel(self._res_panel, false); end
 	self:eval_visible();
 end
 
@@ -184,16 +186,19 @@ function MUICustody:show(instant)
 	if not instant then flash(self._title, 0.8, -1) end
 	fade(self._panel, self._muiAlpha, instant and 0 or 2);
 end
+
 function MUICustody:hide(instant)
 	self._panel:stop();
 	self._title:stop();
 	if not instant then fade(self._title, 1); end
-	fade(self._panel, 0, instant and 0 or 4);
+	fade(self._panel, 0, instant and 0 or 1);
 end
+
 function MUICustody:set_visible(visible, instant)
 	self._visible = visible;
 	if visible then self:show(instant); else self:hide(instant); end
 end
+
 function MUICustody:eval_visible(instant)
 	local eval = self._last_trd_chr + self._last_res_chr > 0;
 	if eval ~= self._visible then
@@ -254,9 +259,7 @@ end
 
 function MUICustody.resize_all()
 	local mui_custody = managers.hud._hud_player_custody;
-	if not mui_custody then
-		return;
-	end
+	if not mui_custody then return; end
 	MUICustody.load_options(true);
 	mui_custody:resize();
 	ArmStatic.align_corners(mui_custody._panel);
@@ -264,9 +267,7 @@ end
 
 function MUICustody.toggle_layer(force_state)
 	local mui_custody = managers.hud._hud_player_custody;
-	if not mui_custody then
-		return;
-	end
+	if not mui_custody then return; end
 	local panel = mui_custody._panel;
 	
 	if force_state == false or panel:layer() > 0 then

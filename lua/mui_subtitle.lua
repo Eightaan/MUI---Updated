@@ -182,7 +182,6 @@ function MUISubtitle:show_subtitle(id, time, macros)
 	self._last_time = Application:time() + 5 + self._muiASPD;
 end
 
-
 function MUISubtitle:clear_subtitle()
 	local items = self._items;
 	for i=1, self.len do

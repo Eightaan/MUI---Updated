@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<mod>
+	<!-- Main code -->
+	<hooks script_path="lua/">
+		<group hook_id="lib/">
+			<group :hook_id="setups/gamesetup">
+				<pre :script_path="static.lua"/>
+				<pre :script_path="figure.lua"/>
+			</group>
+
+			<group :hook_id="managers/">
+				<post :hook_id="hudmanagerpd2" :script_path="mui_manager.lua"/>
+				<post :hook_id="menumanager" :script_path="mui_menu.lua"/>
+
+				<group :script_path="setup.lua">
+					<post :hook_id="statisticsmanager"/>
+					<post :hook_id="trademanager"/>
+					<post :hook_id="moneymanager"/>
+				</group>
+			</group>
+		</group>
+	</hooks>
+
+	<!-- Custom Textures -->
+	<:include src="assets/assets.xml"/>
+</mod>

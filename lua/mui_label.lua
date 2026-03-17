@@ -144,8 +144,7 @@ function MUILabel.load_options(force_load)
 	MUILabel._muiClean = data.mui_label_clean or 2;
 	MUILabel._muiFont = data.mui_label_font or 3;
 	MUILabel._options = true;
-	MUILabel._nameOpt = (MUILabel._muiLevel and 1 or 0) + (MUILabel._muiUpper and 1 or 0) + 
-		(MUILabel._muiName and 1 or 0) + MUILabel._muiClean;
+	MUILabel._nameOpt = (MUILabel._muiLevel and 1 or 0) + (MUILabel._muiUpper and 1 or 0) + (MUILabel._muiName and 1 or 0) + MUILabel._muiClean;
 end
 
 function MUILabel:set_action_text(type_index, tweak_data_id)

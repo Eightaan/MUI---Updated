@@ -8,9 +8,9 @@
 _G.MUIMenu = _G.MUIMenu or class();
 MUIMenu._path = ModPath;
 MUIMenu._data_path = SavePath .. "mui_options.txt";
-MUIMenu._override_test_path = "assets/mod_overrides";
-MUIMenu._asset_test_path = "assets/mod_overrides/MUIAssets/guis/textures/pd2/hud_health.texture";
-MUIMenu._assets = nil;
+--MUIMenu._override_test_path = "assets/mod_overrides";
+--MUIMenu._asset_test_path = "assets/mod_overrides/MUIAssets/guis/textures/pd2/hud_health.texture";
+--MUIMenu._assets = nil;
 MUIMenu._data = {};
 MUIMenu._default_values = {};
 MUIMenu._focus = false;
@@ -27,7 +27,6 @@ function MUIMenu:Save()
 		file:write( json_enc ~= "[]" and json_enc or "{}" );
 		file:close();
 	end
-	self:Assets();
 end
 
 function MUIMenu:Load()
@@ -67,16 +66,16 @@ end
 
 -------
 -- BLT will hang on "Verifying..." if mod_overrides folder doesn't exist, let's work around that and create it.
-function MUIMenu.CheckOverrides()
-	local path = MUIMenu._override_test_path;
+-- function MUIMenu.CheckOverrides()
+	-- local path = MUIMenu._override_test_path;
 
-	if file and file.CreateDirectory and not file.DirectoryExists(path) then
-		file.CreateDirectory(MUIMenu._override_test_path); -- Linux, BLT4L
-	elseif SystemFS and SystemFS.make_dir and not SystemFS:exists(path) then
-		SystemFS:make_dir(MUIMenu._override_test_path); -- Windows, BLT
-	else return; end
-	log("[MUI] Created mod_overrides directory (BLT Verification Workaround)");
-end
+	-- if file and file.CreateDirectory and not file.DirectoryExists(path) then
+		-- file.CreateDirectory(MUIMenu._override_test_path); -- Linux, BLT4L
+	-- elseif SystemFS and SystemFS.make_dir and not SystemFS:exists(path) then
+		-- SystemFS:make_dir(MUIMenu._override_test_path); -- Windows, BLT
+	-- else return; end
+	-- log("[MUI] Created mod_overrides directory (BLT Verification Workaround)");
+-- end
 
 function MUIMenu:ClassEnabled(class)
 	if not self._class_enabled then
@@ -311,7 +310,7 @@ Hooks:Add( "MenuManagerInitialize", "MenuManagerInitialize_MUIMenu", function( m
 		end
 	end
 
-	pcall(MUIMenu.CheckOverrides);
+	--pcall(MUIMenu.CheckOverrides);
 	MUIMenu:Load();
 	local file_paths = {
 		"menus/mui_parent_options.json",

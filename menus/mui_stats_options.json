@@ -126,6 +126,16 @@
 		},
 		{
 			"type" : "toggle",
+			"id" : "mui_stats_skull_text",
+			"callback" : "mui_toggle_callback",
+			"default_value" : false
+		},
+		{
+			"type" : "divider",
+			"size" : "10"
+		},
+		{
+			"type" : "toggle",
 			"id" : "mui_stats_achievements",
 			"callback" : "mui_toggle_callback",
 			"default_value" : false

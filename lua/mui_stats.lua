@@ -66,7 +66,7 @@ function MUIStats:init()
 	local skull_text = "";
 	if self._is_crimespree then
 		skull_text = skull_text .. managers.localization:to_upper_text("menu_cs_level", {level = managers.experience:cash_string(managers.crime_spree:server_spree_level(), "")});
-	else
+	elseif self._muiSkulls then
 		for i = 1, managers.job:current_difficulty_stars() do
 			skull_text = skull_text .. managers.localization:get_default_macro("BTN_SKULL") .. " ";
 		end
@@ -385,15 +385,6 @@ function MUIStats:mutators()
 end
 
 function MUIStats:apply_mutator_font_size(description, total_lines)
-	local s33 = self._muiSize / 3;
-
-	if total_lines <= 5 then
-		description:set_font_size(s33);
-		return
-	end
-
-	local extra_lines = math.min(total_lines, 9) - 5;
-
 	local scale_map = {
 		[1] = 0.86,
 		[2] = 0.73,
@@ -401,8 +392,13 @@ function MUIStats:apply_mutator_font_size(description, total_lines)
 		[4] = 0.55
 	};
 
+	local s33 = self._muiSize / 3;
+	if total_lines <= 5 then description:set_font_size(s33); return end
+
+	local extra_lines = math.min(total_lines, 9) - 5;
 	local scale_factor = scale_map[extra_lines] or 0.55;
 	local font_size = math.floor(s33 * scale_factor);
+
 	description:set_font_size(font_size);
 end
 
@@ -435,7 +431,6 @@ function MUIStats:load_state()
 	local hook_function = function()
 		setup:add_end_frame_clbk(callback(self, self, "on_convert")); 
 	end
-
 	Hooks:PostHook(PlayerManager, "count_up_player_minions", "MUIStats_count_up_plyr_min", hook_function);
 	Hooks:PostHook(PlayerManager, "count_down_player_minions", "MUIStats_count_dwn_plyr_min", hook_function);
 	Hooks:PostHook(PlayerManager, "reset_minions", "MUIStats_reset_min", hook_function);
@@ -485,6 +480,7 @@ function MUIStats.load_options(force_load)
 	MUIStats._muiMusic = data.mui_stats_heist_track == true;
 	MUIStats._muiAccuracy = data.mui_stats_accuracy == true;
 	MUIStats._muiKills = data.mui_stats_kills == true;
+	MUIStats._muiSkulls = data.mui_stats_skull_text == true;
 	MUIStats._options = true;
 end
 
@@ -502,7 +498,8 @@ function MUIStats:resize()
 	local vMargin = self._muiVMargin;
 	local hPos = self._muiHPos;
 	local vPos = self._muiVPos;
-	
+	local width = size*wMul;
+
 	local panel = self._panel;
 	local top = self._top_panel;
 	local time = self._heist_time;
@@ -518,12 +515,10 @@ function MUIStats:resize()
 	local obj = self._objectives_panel;
 	local loot = self._loot_panel;
 
-	local width = size*wMul;
-
 	-- top
 	Figure(top):shape(width, s33);
 	Figure(time):rect(s33);
-	Figure(assault):progeny(line, s33):adapt():align(2, 1);
+	Figure(assault):progeny(line, s33):adapt():attach(time, 2, size/2);
 	Figure({kills,accuracy,hostages,bodybags,pagers,converts,wave}):progeny(line, s33):adapt();
 	Figure(supplements):shape(width, s33):align(3, 1); -- TODO: elude(assault)
 	supplements:set_margin(size/7)
@@ -540,19 +535,19 @@ function MUIStats:resize()
 end
 
 function MUIStats:resize_objectives()
-	local s33 = self._muiSize / 3;
-
 	local obj = self._objectives_panel;
 	local title = obj:child("title");
 	local amount = obj:child("amount");
 	local desc = obj:child("description");
 
+	local s33 = self._muiSize / 3;
 	local width = obj:w();
 	local indent = width * 0.05;
 
 	Figure(title):rect(s33);
 	Figure(amount):rect(s33):attach(title, 2, s33):fill();
 	Figure(desc):shape(width - indent, size, s33):attach(title, 3):shift(indent);
+
 	if self._mutators_active then
 		local mutator_count = #managers.mutators:active_mutators();
 		self:apply_mutator_font_size(desc, mutator_count);
@@ -560,8 +555,6 @@ function MUIStats:resize_objectives()
 end
 
 function MUIStats:resize_loot()
-	local s33 = self._muiSize/3;
-
 	local loot = self._loot_panel;
 	local secured = loot:child("title");
 	local cash = loot:child("text");
@@ -570,6 +563,7 @@ function MUIStats:resize_loot()
 	local g = loot:child("gage_text");
 	local packages = loot:child("gage_amount");
 
+	local s33 = self._muiSize/3;
 	local indent = loot:w() * 0.05;
 
 	Figure(secured):rect(s33);
@@ -583,18 +577,14 @@ end
 function MUIStats.resize_all()
 	MUIStats.load_options(true);
 	local stats = managers.hud._hud_statsscreen;
-	if not stats then
-		return;
-	end
+	if not stats then return; end
 	stats:resize();
 	ArmStatic.align_corners(stats._panel);
 end
 
 function MUIStats.toggle_layer(force_state)
 	local stats = managers.hud._hud_statsscreen;
-	if not stats then
-		return;
-	end
+	if not stats then return; end
 	
 	if force_state == false or stats._panel:layer() > 1 then
 		stats:hide(true);
@@ -664,6 +654,7 @@ function MUIStats:hit_accuracy()
 	local accuracy_panel_enabled = self._muiAccuracy;
 	local panel = self._accuracy_panel;
 	local text = panel:child("amount");
+
 	self._supplement_list:set_visible_panel(panel, accuracy_panel_enabled);
 	text:set_text(managers.statistics:session_hit_accuracy().."%");
 	self:resize();
@@ -671,8 +662,9 @@ end
 
 function MUIStats:on_kill()
 	local kill_count_panel_enabled = self._muiKills;
-	local panel = self._kill_count_panel
+	local panel = self._kill_count_panel;
 	local text = panel:child("amount");
+
 	self._supplement_list:set_visible_panel(panel, kill_count_panel_enabled);
 	text:set_text(managers.statistics:MUITotalKills());
 	self:resize();
@@ -725,7 +717,6 @@ function MUIStats:sync_set_assault_mode(mode)
 	fade_c(panel:child("title"), colour, 1);
 	fade_c(panel:child("icon"), colour, 1);
 end
-
 
 -- I'm guessing they have/had ideas of implementing more buffs, but as of right now there's only the one.
 -- buff_name is not even used in the original function.
@@ -827,10 +818,11 @@ function MUIStats:loot_value_updated()
 
 	local track_name = managers.music:current_track_string();
 	track_name = title_case(track_name);
+
 	local heist_track = self._muiMusic and string.format("%-6s%s %s", "", managers.localization:text("menu_es_playing_track"), track_name) or "";
+	cash:set_text(managers.experience:cash_string(total_value) .. "K" .. heist_track);
 
 	acquired:set_text(text);
-	cash:set_text(managers.experience:cash_string(total_value) .. "K" .. heist_track);
 
 	for _, gage_count in ipairs({g, gage, gage_icon}) do
 		gage_count:set_visible(has_packages)
@@ -945,15 +937,14 @@ end
 function MUIStats:set_wave(wave)
 	local panel = self._wave_panel;
 	local max_wave = managers.job:current_level_wave_count();
-
 	panel:child("amount"):set_text( format("%d/%d", wave or 0, max_wave) );
 	self._supplement_list:set_visible_panel(panel, (max_wave > 0 and max_wave < math.huge));
 end
 
 function MUIStats:modify_time(time)
-	self:set_time(self._last_time + time)
+	self:set_time(self._last_time + time);
 end
 
 function MUIStats:reset()
-	self._last_time = 0
+	self._last_time = 0;
 end

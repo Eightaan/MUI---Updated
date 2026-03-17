@@ -285,6 +285,13 @@ function MUITeammate:create_info_list(parent)
 end
 
 function MUITeammate:create_radial_panel(parent)
+	local function tex(name, fallback)
+		if self._muiColor then
+			return "mui_textures/" .. name;
+		end
+		return fallback;
+	end
+
 	local panel = parent:panel({
 		name = "radial_health_panel",
 		layer = 1
@@ -294,19 +301,19 @@ function MUITeammate:create_radial_panel(parent)
 	local radial_health = panel:bitmap({
 		name = "radial_health",
 		color = Color.black,
-		texture = "guis/textures/pd2/hud_health",
+		texture = tex("health", "guis/textures/pd2/hud_health"),
 		render_template = "VertexColorTexturedRadial",
 		blend_mode = "add",
 		layer = 2
 	});
 	self._radial_health = radial_health;
 
-	if self._muiColor and not MUIMenu._data.mui_enable_health_numbers then
+	if self._muiColor and self._muiHpClr and not MUIMenu._data.mui_enable_health_numbers then
 		radial_health:set_blend_mode("sub");
 		panel:bitmap({
 			name = "radial_health_fill",
 			color = self._prime_color,
-			texture = "guis/textures/pd2/hud_health",
+			texture = "mui_textures/health",
 			blend_mode = "add",
 			layer = 1
 		});
@@ -317,17 +324,17 @@ function MUITeammate:create_radial_panel(parent)
 	local radial_shield = panel:bitmap({
 		name = "radial_shield",
 		color = Color.black,
-		texture = "guis/textures/pd2/hud_shield",
+		texture = tex("shield", "guis/textures/pd2/hud_shield"),
 		render_template = "VertexColorTexturedRadial",
 		blend_mode = "add",
-		layer = 1,
+		layer = 1
 	});
 	flip_tex_h(radial_shield);
 	self._radial_shield = radial_shield;
 
 	self._damage_indicator = panel:bitmap({
 		name = "damage_indicator",
-		color = Color(1, 1, 1, 1),
+		color = Color(1,1,1,1),
 		texture = "guis/textures/pd2/hud_radial_rim",
 		blend_mode = "add",
 		alpha = 0,
@@ -346,57 +353,64 @@ function MUITeammate:create_radial_panel(parent)
 
 	local ability = panel:panel({ name = "radial_ability" });
 	self._radial_ability = ability;
+
 	self._ability_meter = ability:bitmap({
 		name = "ability_meter",
 		color = Color.black,
-		texture = "guis/textures/pd2/hud_fearless",
+		texture = tex("fearless", "guis/textures/pd2/hud_fearless"),
 		render_template = "VertexColorTexturedRadial",
 		blend_mode = "add",
 		layer = 5
 	});
+
 	self._ability_icon = ability:bitmap({
-		blend_mode = "add",
 		name = "ability_icon",
 		visible = false,
+		blend_mode = "add",
 		layer = 5
 	});
 
-	local delayed = panel:panel({name = "radial_delayed_damage"})
+	local delayed = panel:panel({name = "radial_delayed_damage"});
+
 	self._delayed_health = delayed:bitmap({
-		texture = "guis/textures/pd2/hud_dot",
 		name = "radial_delayed_damage_health",
+		texture = "guis/textures/pd2/hud_dot",
 		color = Color.black,
 		render_template = "VertexColorTexturedRadialFlex",
 		layer = 5
 	});
+
 	self._delayed_shield = delayed:bitmap({
-		texture = "guis/textures/pd2/hud_dot_shield",
 		name = "radial_delayed_damage_armor",
+		texture = "guis/textures/pd2/hud_dot_shield",
 		color = Color.black,
 		render_template = "VertexColorTexturedRadialFlex",
 		layer = 5
 	});
+
 	self._absorb_health = panel:bitmap({
 		name = "radial_absorb_health_active",
 		color = Color.black,
-		texture = "guis/dlcs/coco/textures/pd2/hud_absorb_health",
+		texture = tex("absorb_health", "guis/dlcs/coco/textures/pd2/hud_absorb_health"),
 		render_template = "VertexColorTexturedRadialFlex",
 		blend_mode = "normal",
 		layer = 5
 	});
+
 	self._absorb_shield = panel:bitmap({
 		name = "radial_absorb_shield_active",
 		color = Color.black,
-		texture = "guis/dlcs/coco/textures/pd2/hud_absorb_shield",
+		texture = tex("absorb_shield", "guis/dlcs/coco/textures/pd2/hud_absorb_shield"),
 		render_template = "VertexColorTexturedRadialFlex",
 		blend_mode = "normal",
 		layer = 5
 	});
+
 	self._info_meter = panel:bitmap({
 		name = "radial_info_meter",
 		visible = false,
 		color = Color.black,
-		texture = "guis/dlcs/coco/textures/pd2/hud_absorb_stack_fg",
+		texture = tex("absorb_stack", "guis/dlcs/coco/textures/pd2/hud_absorb_stack_fg"),
 		render_template = "VertexColorTexturedRadial",
 		blend_mode = "add",
 		layer = 5
@@ -423,7 +437,7 @@ function MUITeammate:create_radial_panel(parent)
 	if self._main_player then
 		local rip = panel:bitmap({
 			name = "radial_rip",
-			texture = "guis/textures/pd2/hud_rip",
+			texture = tex("rip", "guis/textures/pd2/hud_rip"),
 			render_template = "VertexColorTexturedRadial",
 			blend_mode = "add",
 			color = Color.black,
@@ -433,20 +447,16 @@ function MUITeammate:create_radial_panel(parent)
 		flip_tex_h(rip);
 		self._radial_rip = rip;
 	end
+
 	if self._main_player then
 		self.radial_rip_bg = panel:bitmap({
-			texture = "guis/textures/pd2/hud_rip_bg",
 			name = "radial_rip_bg",
-			layer = 1,
-			visible = false,
+			texture = "guis/textures/pd2/hud_rip_bg",
 			render_template = "VertexColorTexturedRadial",
-			texture_rect = {
-				128,
-				0,
-				-128,
-				128
-			},
-			color = Color(1, 0, 0, 0),
+			texture_rect = {128,0,-128,128},
+			color = Color(1,0,0,0),
+			visible = false,
+			layer = 1,
 			w = panel:w(),
 			h = panel:h()
 		});
@@ -1131,6 +1141,7 @@ function MUITeammate.align_panels()
 	team:set_margin(gap);
 	team:reposition();
 	ArmStatic.align_corners(team);
+	MUITeammate.ph_update();
 end
 
 --------------------- POCO_COMP ------------------------
@@ -1168,6 +1179,16 @@ function MUITeammate:ph_panel()
 		self._ph = peer_id and TPocoHud3["pnl_" .. peer_id];
 	end
 	return self._ph;
+end
+
+function MUITeammate.ph_update()
+	if not Poco then return end
+	DelayedCalls:Add("mui_fix_delayed_call_1", 0.1, function()
+		PocoHud3 = nil;
+		DelayedCalls:Add("mui_fix_delayed_call_2", 0.1, function()
+			PocoHud3 = nil;
+		end)
+	end)
 end
 ------------------------------------------------------
 
@@ -1235,6 +1256,7 @@ function MUITeammate:redisplay_panel()
 	if visible == self._visible then return; end
 	self._visible = visible;
 	self._parent:set_visible_panel(self._panel, visible);
+	self.ph_update();
 end
 
 
@@ -1276,7 +1298,10 @@ function MUITeammate.load_options(force_load)
 	MUITeammate._muiFont = data.mui_font_pref or 4;
 	MUITeammate._muiAmmo = data.mui_ammo or 1;
 	--if MUITeammate._muiColor == nil then
-	MUITeammate._muiColor = MUIMenu._data.mui_custom_textures and data.mui_hp_color == true; --or data.mui_hp_color == false;
+	MUITeammate._muiColor = MUIMenu._data.mui_custom_textures ~= false;
+	MUITeammate._muiHpClr = data.mui_hp_color == true;
+	--end
+	
 	--end
 	MUITeammate._options = true;
 end

@@ -67,9 +67,9 @@ function MUIHint:resize()
 	local panel = self._panel;
 	local hint = self._hint;
 	local subpnl = hint._panel;
-		local text = hint._text;
-		local top = hint._border_top;
-		local bot = hint._border_bot;
+	local text = hint._text;
+	local top = hint._border_top;
+	local bot = hint._border_bot;
 
 	local size = self._muiSize;
 	local alpha = self._muiAlpha;
@@ -85,8 +85,10 @@ function MUIHint:resize()
 
 	Figure(text):rect(size):lead();
 	local width = text:w();
+	local _, line_count = text:text():gsub("\n", "");
+	line_count = line_count + 1;
 
-	Figure(subpnl):shape(width, size);
+	Figure(subpnl):shape(width, size * line_count);
 	Figure(top):shape(width * 0.7, s5);
 	Figure(bot):shape(width * 0.7, s5):move(nil, subpnl:h() - s5);
 

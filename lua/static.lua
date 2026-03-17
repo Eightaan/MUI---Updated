@@ -533,9 +533,11 @@ function ArmStatic.rotate(o, attr)
 	end
 	o:set_rotation(end_r);
 end
+
 function ArmStatic.rotate_animate(o, r, t)
 	return o:animate(callback(o, ArmStatic, "rotate", {r, t or 0.7}));
 end
+
 function ArmStatic.fade(o, attr)
 	o:set_visible(true);
 	local t, a = 0, o:alpha();
@@ -551,9 +553,11 @@ function ArmStatic.fade(o, attr)
 	o:set_alpha(end_a);
 	o:set_visible(end_a ~= 0);
 end
+
 function ArmStatic.fade_animate(o, a, t)
 	return o:animate(callback(o, ArmStatic, "fade", {a, t or 0.7}));
 end
+
 function ArmStatic.flash(o, attr)
 	o:set_visible(true);
 	local t, a, s = 0, o:alpha(), 0;
@@ -571,9 +575,11 @@ function ArmStatic.flash(o, attr)
 	end
 	ArmStatic.fade(o, {a, rest});
 end
+
 function ArmStatic.flash_animate(o, a, t, aspd, plat)
 	return o:animate(callback(o, ArmStatic, "flash", {a, t, aspd, plat}));
 end
+
 function ArmStatic.fade_c(o, attr)
 	local t, c, l = 0, o:color(), 0;
 	local end_c = attr[1] or Color.black;
@@ -591,9 +597,11 @@ function ArmStatic.fade_c(o, attr)
 	end
 	o:set_color(Color(end_r, end_g, end_b));
 end
+
 function ArmStatic.fade_c_animate(o, c, t)
 	return o:animate(callback(o, ArmStatic, "fade_c", {c, t or 0.7}));
 end
+
 function ArmStatic.flash_c(o, attr)
 	local t, c, s = 0, o:color(), 0;
 	local end_c = attr[1] or Color.black;
@@ -612,6 +620,7 @@ function ArmStatic.flash_c(o, attr)
 	end
 	ArmStatic.fade_c(o, {c, rest});
 end
+
 function ArmStatic.flash_c_animate(o, c, t, aspd, plat)
 	return o:animate(callback(o, ArmStatic, "flash_c", {c, t, aspd, plat}));
 end

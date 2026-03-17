@@ -129,15 +129,14 @@ function MUIWaypoint:resize()
 	local aRect = self.arrow_rect;
 	local timer = self.timer_gui;
 	local distance = self.distance;
-	
+
 	local size = self._muiSize;
 	local alpha = self._muiAlpha;
 	local aShow = self._muiArrow and 1 or 0;
 	local dShow = self._muiDistance and 1 or 0;
 	local s300 = size*3;
 	local s75 = size*0.75;
-	
-	
+
 	Figure(panel):view(alpha):shape(s300);
 	Figure(arrow):view(aShow):shape(s75, aRect[4] / aRect[3] * s75);
 	Figure(bitmap):shape(size):aspect(bRect[3], bRect[4]):align(2);
@@ -151,7 +150,7 @@ function MUIWaypoint.toggle_layer(force_state)
 	if not waypoints or not first_wp then
 		return;
 	end
-	
+
 	local state = first_wp.panel:layer() > 0 or force_state == false;
 	for _, wp in pairs(waypoints) do
 		if wp.resize then

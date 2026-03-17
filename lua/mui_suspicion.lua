@@ -13,6 +13,13 @@ local visibility = ArmStatic.visibility;
 
 function MUISuspicion:init(hud, sound_source)
 	self.load_options();
+	local function tex(name, fallback)
+		if self._muiColor then
+			return "mui_textures/" .. name;
+		end
+		return fallback;
+	end
+
 	local local_id = ArmStatic.tunnel(managers, "network", "session", "local_peer", "id") or 1;
 	local crim_color = tweak_data.chat_colors[local_id];
 	self._prime_color = crim_color;
@@ -37,7 +44,7 @@ function MUISuspicion:init(hud, sound_source)
 	self._susp_bars = bars;
 
 	local susp_right = bars:bitmap({
-		texture = "guis/textures/pd2/hud_stealthmeter",
+		texture = tex("stealthmeter", "guis/textures/pd2/hud_stealthmeter"),
 		name = "suspicion_right",
 		blend_mode = "add",
 		render_template = "VertexColorTexturedRadial",
@@ -64,7 +71,7 @@ function MUISuspicion:init(hud, sound_source)
 	end]]
 	
 	local susp_left = bars:bitmap({
-		texture = "guis/textures/pd2/hud_stealthmeter",
+		texture = tex("stealthmeter", "guis/textures/pd2/hud_stealthmeter"),
 		name = "suspicion_left",
 		blend_mode = "add",
 		render_template = "VertexColorTexturedRadial",
@@ -97,13 +104,13 @@ function MUISuspicion:init(hud, sound_source)
 		font = muiFont
 	});
 	self._eye = icon_panel:bitmap({
-		texture = "guis/textures/pd2/hud_stealth_eye",
+		texture = tex("stealth_eye", "guis/textures/pd2/hud_stealth_eye"),
 		name = "hud_stealth_eye",
 		alpha = 0,
 		blend_mode = "add"
 	});
 	self._exclaim = icon_panel:bitmap({
-		texture = "guis/textures/pd2/hud_stealth_exclam",
+		texture = tex("stealth_exclam", "guis/textures/pd2/hud_stealth_exclam"),
 		name = "hud_stealth_exclam",
 		alpha = 0,
 		blend_mode = "add",
@@ -289,7 +296,7 @@ function MUISuspicion.load_options(force_load)
 	MUISuspicion._muiVPos = data.mui_suspicion_v_pos or 2;
 	MUISuspicion._muiRot = data.mui_suspicion_rot or 0;
 	MUISuspicion._muiFont = data.mui_font_pref or 4;
-	--MUISuspicion._muiColor = false;
+	MUISuspicion._muiColor = MUIMenu._data.mui_custom_textures ~= false;
 	MUISuspicion._options = true;
 end
 
@@ -304,7 +311,7 @@ function MUISuspicion:resize()
 	local mBars = self._muiBars;
 	local vEye = self._muiEye;
 	local vExclaim = self._muiExclaim;
-	local assets = MUIMenu._data.mui_custom_textures;
+	local assets = self._muiColor;
 	
 	local sp = self._panel;
 	local spb = self._susp_bars;
