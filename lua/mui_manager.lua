@@ -152,10 +152,12 @@ if pdoclass("MUITeammate", "lua/mui_team.lua") and
 		if not id or id > #self._teammate_panels then return; end
 		self._teammate_panels[id]:set_talking(active);
 	end
+
 	HUDManager._mui_base.set_stamina_value = HUDManager.set_stamina_value;
 	function HUDManager:set_stamina_value(val)
 		self._teammate_panels[self.PLAYER_PANEL]:set_stamina(val);
 	end
+
 	HUDManager._mui_base.set_max_stamina = HUDManager.set_max_stamina;
 	function HUDManager:set_max_stamina(val)
 		self._teammate_panels[self.PLAYER_PANEL]:set_max_stamina(val);

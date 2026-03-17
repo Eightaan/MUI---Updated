@@ -101,6 +101,17 @@
 		},
 		{
 			"type" : "toggle",
+			"id" : "mui_player_firemode_display",
+			"title" : "mui_player_firemode_display_title",
+			"callback" : "mui_toggle_callback",
+			"default_value" : true
+		},
+		{
+			"type" : "divider",
+			"size" : "10"
+		},
+		{
+			"type" : "toggle",
 			"id" : "mui_player_revives",
 			"title" : "mui_rev_warn_title",
 			"callback" : "mui_toggle_callback",

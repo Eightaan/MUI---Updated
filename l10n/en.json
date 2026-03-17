@@ -31,6 +31,8 @@
 	"mui_player_damage_desc" : "Display a red health indicator when damage is taken.",
 	"mui_player_stamina_title" : "Stamina",
 	"mui_player_stamina_desc" : "Display circle stamina indicator when low.",
+	"mui_player_firemode_display_title" : "Firemode Indicator",
+	"mui_player_firemode_display_desc" : "Enable the firemode indicator.",
 	"mui_team_options_title" : "Team",
 	"mui_team_options_desc" : "Customizations for other player panels.",
 	"mui_team_ai_title" : "AI Panels",

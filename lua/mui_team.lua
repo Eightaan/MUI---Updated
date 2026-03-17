@@ -6,10 +6,9 @@
 --------
 _G.MUITeammate = _G.MUITeammate or class(HUDTeammate);
 ArmStatic.void(MUITeammate, {
-	"recreate_weapon_firemode","_create_primary_weapon_firemode",
-	"_create_secondary_weapon_firemode", "set_weapon_firemode",
-	"_set_weapon_selected", "layout_special_equipments", "set_stored_health_max",
-	"_animate_update_absorb", "animate_update_absorb_active", "_animate_timer", "_animate_timer_flash"
+	"_set_weapon_selected", "layout_special_equipments", 
+	"set_stored_health_max", "_animate_update_absorb", 
+	"animate_update_absorb_active", "_animate_timer", "_animate_timer_flash"
 });
 
 --- /// Bunch of helper functions to alter MUI health display - Freyah /// 
@@ -633,6 +632,7 @@ function MUITeammate:create_weapons_panel(parent)
 		vertical = "bottom",
 		font = self._font
 	});
+	self:recreate_weapon_firemode()
 end
 
 function MUITeammate:create_waiting_panel(parent)
@@ -820,6 +820,22 @@ function MUITeammate:resize()
 	Figure(weapons):shape(sAmmo, size):attach(health, 2);
 	Figure(primary):shape(sAmmo, size/2):progeny(shape_ammo);
 	Figure(secondary):shape(sAmmo, size/2):attach(primary, 3):progeny(shape_ammo);
+
+	if self._muiFire and self._primary_firemode and self._secondary_firemode then
+		local clip = self._primary_ammo_clip;
+		local total = self._primary_ammo_total;
+		local x = clip:right() + (total:left() - clip:right()) / 2;
+		local y = primary:h() / 2;
+
+		self._primary_firemode:set_font_size(s33/1.5);
+		self._primary_firemode:set_center(x, y);
+		self._primary_firemode:set_visible(self._muiFire);
+
+		--Using the same x/y as primrary since they are identical
+		self._secondary_firemode:set_font_size(s33/1.5);
+		self._secondary_firemode:set_center(x, y);
+		self._secondary_firemode:set_visible(self._muiFire);
+	end
 
 	Figure(equipment):shape(s66, size):attach(weapons, 2):progeny(shape_equipment);
 	equipment:reposition();
@@ -1192,7 +1208,6 @@ function MUITeammate.ph_update()
 end
 ------------------------------------------------------
 
-
 function MUITeammate:set_name(teammate_name)
 	if self._base_name == teammate_name then return; end
 
@@ -1297,6 +1312,7 @@ function MUITeammate.load_options(force_load)
 	MUITeammate._muiSHide = data.mui_begin_hidden ~= false;
 	MUITeammate._muiFont = data.mui_font_pref or 4;
 	MUITeammate._muiAmmo = data.mui_ammo or 1;
+	MUITeammate._muiFire = data.mui_player_firemode_display ~= false;
 	--if MUITeammate._muiColor == nil then
 	MUITeammate._muiColor = MUIMenu._data.mui_custom_textures ~= false;
 	MUITeammate._muiHpClr = data.mui_hp_color == true;
@@ -1771,4 +1787,71 @@ function MUITeammate:set_custom_radial(data)
 	radial_custom:set_color(Color(1, r, 1, 1));
 	radial_custom:set_visible(r > 0);
 	self._info_list:set_visible_panel(self._muiStam and self._main_player and self._revives and self._revives < 2 and r and r > 0 and self._stamina_icon:visible() and self._stamina_icon, false);
+end
+
+function MUITeammate:_create_primary_weapon_firemode()
+    local panel = self._primary_weapon_panel;
+    if not panel then return; end
+
+    if alive(self._primary_firemode) then
+        panel:remove(self._primary_firemode);
+    end
+
+    self._primary_firemode = panel:text({
+        name = "firemode",
+		visible = false,
+        text = "",
+        font = self._font,
+        font_size = 16,
+        color = Color.white,
+        align = "center",
+        vertical = "center",
+        layer = 2
+    });
+end
+
+function MUITeammate:_create_secondary_weapon_firemode()
+    local panel = self._secondary_weapon_panel;
+    if not panel then return; end
+
+    if alive(self._secondary_firemode) then
+        panel:remove(self._secondary_firemode);
+    end
+
+    self._secondary_firemode = panel:text({
+        name = "firemode",
+        text = "",
+		visible = false,
+        font = self._font,
+        font_size = 16,
+        color = Color.white,
+        align = "center",
+        vertical = "center",
+        layer = 2
+    });
+end
+
+function MUITeammate:recreate_weapon_firemode()
+    self:_create_primary_weapon_firemode();
+    self:_create_secondary_weapon_firemode();
+end
+
+function MUITeammate:set_weapon_firemode(id, firemode)
+    local target;
+    if id == 2 then
+        target = self._primary_firemode;
+    elseif id == 1 then
+        target = self._secondary_firemode;
+    end
+    if not alive(target) then return; end
+
+    local text = "";
+    if firemode == "auto" then
+        text = "|||";
+    elseif firemode == "burst" then
+        text = "||";
+    elseif firemode == "single" then
+        text = "|";
+    end
+    target:set_text(text);
 end
