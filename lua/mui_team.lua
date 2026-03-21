@@ -6,60 +6,63 @@
 --------
 _G.MUITeammate = _G.MUITeammate or class(HUDTeammate);
 ArmStatic.void(MUITeammate, {
-	"_set_weapon_selected", "layout_special_equipments", 
-	"set_stored_health_max", "_animate_update_absorb", 
-	"animate_update_absorb_active", "_animate_timer", "_animate_timer_flash"
+	"layout_special_equipments", "set_stored_health_max", 
+	"_animate_update_absorb", "animate_update_absorb_active", 
+	"_animate_timer", "_animate_timer_flash"
 });
 
 --- /// Bunch of helper functions to alter MUI health display - Freyah /// 
-
 local function MUISetNewHealthValue(self)
-	if not MUIMenu._data.mui_enable_health_numbers then return; end
+	if not self._muiHealthNr then return; end
 	if self._health_numbers then
 		local data = self._health_data;
 		local Value = math.clamp(data.current / data.total, 0, 1);
 		local real_value = math.round((data.total * 10) * Value);
 		self._health_numbers:set_text(real_value);
 		if real_value > 35 then
-			self._health_numbers:show()
-			self._health_numbers:set_color(Color(71/255, 255/255, 120/255), Color.black:with_alpha(0.5))
+			self._health_numbers:show();
+			self._health_numbers:set_color(Color(71/255, 255/255, 120/255), Color.black:with_alpha(0.5));
 		elseif real_value < 35 and not self._custardy then
-			self._health_numbers:set_color(Color.red:with_alpha(0.8))
+			self._health_numbers:set_color(Color.red:with_alpha(0.8));
 		elseif self._custardy then
-			self._health_numbers:hide()
+			self._health_numbers:hide();
 		end
 	end
 end
 
 local function MUISetNewArmorValue(self)
-    if not MUIMenu._data.mui_enable_health_numbers then return; end
+    if not self._muiHealthNr then return; end
     if self._armor_numbers then
         local data = self._armor_data;
         local Value = math.clamp(data.current / data.total, 0, 1);
-        if Value ~= Value then self._armor_numbers:hide() return end
+        if Value ~= Value then self._armor_numbers:hide() return; end
         local real_value = math.round((data.total * 10) * Value);
         self._armor_numbers:set_text(real_value);
-        self._armor_numbers:set_color(Color(48/255, 141/255, 255/255), Color.black:with_alpha(0.5))
+        self._armor_numbers:set_color(Color(48/255, 141/255, 255/255), Color.black:with_alpha(0.5));
         if real_value <= 0 or self._custardy then
-            self._armor_numbers:hide()
+            self._armor_numbers:hide();
         else
-            self._armor_numbers:show()
+            self._armor_numbers:show();
         end
     end
 end
 
 local function MUIResized(self)
 	if not self._radial_health_panel then return; end
-	if not MUIMenu._data.mui_enable_health_numbers then
-		self._radial_health_panel:child("radial_health"):show()
-		self._radial_health_panel:child("radial_shield"):show()
-		if self._health_numbers then self._health_numbers:hide() end
-		if self._armor_numbers then self._armor_numbers:hide() end
+	if not self._muiHealthNr then	
+		self._radial_health_panel:child("radial_health"):show();
+		self._radial_health_panel:child("radial_shield"):show();
+		if self._damage_indicator then self._damage_indicator:show(); end
+		if self._radial_health_fill then self._radial_health_fill:show(); end
+		if self._health_numbers then self._health_numbers:hide(); end
+		if self._armor_numbers then self._armor_numbers:hide(); end
 		return;
 	end
 
-	self._radial_health_panel:child("radial_health"):hide()
-	self._radial_health_panel:child("radial_shield"):hide()
+	self._radial_health_panel:child("radial_health"):hide();
+	self._radial_health_panel:child("radial_shield"):hide();
+	if self._radial_health_fill then self._radial_health_fill:hide(); end
+	if self._damage_indicator then self._damage_indicator:hide(); end
 
 	if not self._health_numbers then
 		local health_numbers = self._radial_health_panel:text({
@@ -73,7 +76,7 @@ local function MUIResized(self)
 			layer = 3,
 			visible = true
 		});
-		self._health_numbers = health_numbers
+		self._health_numbers = health_numbers;
 	end
 
 	if not self._armor_numbers then
@@ -88,7 +91,12 @@ local function MUIResized(self)
 			layer = 3,
 			visible = true
 		});
-		self._armor_numbers = armor_numbers
+		self._armor_numbers = armor_numbers;
+	end
+	
+	if self._muiHealthNr then
+		MUISetNewHealthValue(self);
+		MUISetNewArmorValue(self);
 	end
 end
 
@@ -307,9 +315,10 @@ function MUITeammate:create_radial_panel(parent)
 	});
 	self._radial_health = radial_health;
 
-	if self._muiColor and self._muiHpClr and not MUIMenu._data.mui_enable_health_numbers then
+	if self._muiColor then
 		radial_health:set_blend_mode("sub");
-		panel:bitmap({
+
+		self._radial_health_fill = panel:bitmap({
 			name = "radial_health_fill",
 			color = self._prime_color,
 			texture = "mui_textures/health",
@@ -424,7 +433,7 @@ function MUITeammate:create_radial_panel(parent)
 		-- layer = 5
 	-- });
 
-	if not MUIMenu._data.mui_disable_leech_support then
+	if not self._muiLeech then
 		self.copr_overlay_panel = panel:panel({
 			name = "copr_overlay_panel",
 			layer = 3,
@@ -821,22 +830,6 @@ function MUITeammate:resize()
 	Figure(primary):shape(sAmmo, size/2):progeny(shape_ammo);
 	Figure(secondary):shape(sAmmo, size/2):attach(primary, 3):progeny(shape_ammo);
 
-	if self._muiFire and self._primary_firemode and self._secondary_firemode then
-		local clip = self._primary_ammo_clip;
-		local total = self._primary_ammo_total;
-		local x = clip:right() + (total:left() - clip:right()) / 2;
-		local y = primary:h() / 2;
-
-		self._primary_firemode:set_font_size(s33/1.5);
-		self._primary_firemode:set_center(x, y);
-		self._primary_firemode:set_visible(self._muiFire);
-
-		--Using the same x/y as primrary since they are identical
-		self._secondary_firemode:set_font_size(s33/1.5);
-		self._secondary_firemode:set_center(x, y);
-		self._secondary_firemode:set_visible(self._muiFire);
-	end
-
 	Figure(equipment):shape(s66, size):attach(weapons, 2):progeny(shape_equipment);
 	equipment:reposition();
 
@@ -851,13 +844,13 @@ function MUITeammate:resize()
 	Figure(condition):shape(size):leech(player):attach(carry, 3);
 	Figure(timer):shape(sTimer):leech(condition):align(2);
 
-	if MUIMenu._data.mui_enable_center_team_revives and not MUIMenu._data.mui_enable_health_numbers and not self._main_player then
+	if self._muiRevC and not self._muiHealthNr and not self._main_player then
 		Figure(info):shape(size/3):leech(condition):align(2):spank(s33);
 	else
 		Figure(info):shape(s66, s33):leech(player):align(3, 1):spank(s33);
 	end
 
-	if MUIMenu._data.mui_enable_health_numbers then
+	if self._muiHealthNr then
 		self._health_numbers:set_font_size((size/3) + 12);
 		self._armor_numbers:set_font_size(self._health_numbers:font_size());
 	end
@@ -878,6 +871,14 @@ function MUITeammate:resize()
 	if self._current_equipment_panel then
         self:set_equipment_amount(self._current_equipment_panel, self._current_equipment_amount, self._current_equipment_alt);
     end
+	
+	if self._muiHealthNr then
+		if self._health_numbers then self._health_numbers:set_visible(true); end
+		if self._armor_numbers then self._armor_numbers:set_visible(true); end
+	else
+		if self._health_numbers then self._health_numbers:set_visible(false); end
+		if self._armor_numbers then self._armor_numbers:set_visible(false); end
+	end
 end
 
 function MUITeammate:resize_wait()
@@ -964,6 +965,17 @@ function MUITeammate:set_weapon_selected(id, hud_icon)
 	local scdry = id == 1;
 	self._primary_weapon_panel:set_alpha(scdry and 0.5 or 1);
 	self._secondary_weapon_panel:set_alpha(scdry and 1 or 0.5);
+
+    local primary_alpha = self._primary_weapon_panel:alpha();
+    local secondary_alpha = self._secondary_weapon_panel:alpha();
+
+    if alive(self._primary_firemode) then
+        self._primary_firemode:set_alpha(primary_alpha);
+    end
+
+    if alive(self._secondary_firemode) then
+        self._secondary_firemode:set_alpha(secondary_alpha);
+    end
 end
 
 function MUITeammate:set_ammo_amount_by_type(index, max_clip, current_clip, current_left, max_left)
@@ -1014,6 +1026,51 @@ function MUITeammate:redisplay_ammo(index)
 	wac:set_color(col_c);
 	wat:set_text(format("%03d", total));
 	wat:set_color(col_t);
+	
+	if self._muiFire then
+		local primary_total_text = self._primary_ammo_total;
+		local secondary_total_text = self._secondary_ammo_total;
+		
+		local primary_data = self._ammo_data[2];
+		local secondary_data = self._ammo_data[1];
+		local p_total = primary_data.total or 0;
+		local p_clip = primary_data.clip or 0;
+		local s_total = secondary_data.total or 0;
+		local s_clip = secondary_data.clip or 0;
+		
+		local s33 = self._mui_size/3;
+		local image_size = s33/1.9;
+		local position = s33/4.2;
+		
+		local primary_ammo;
+		local secondary_ammo;
+		local mode = self._muiAmmo;
+
+		--Default
+		if mode == 1 then primary_ammo = p_total; secondary_ammo = s_total;
+		--Exclude
+		elseif mode == 2 then primary_ammo = p_total - p_clip; secondary_ammo = s_total - s_clip;
+		--Clips
+		else primary_ammo = 1; secondary_ammo = 1; end
+
+		if alive(self._primary_firemode) and alive(primary_total_text) and primary_total_text:right() > 0 then
+			local x = primary_total_text:right() - position;
+			local y = primary_total_text:center_y();
+
+			self._primary_firemode:set_size(image_size, image_size);
+			self._primary_firemode:set_center(x, y);
+			self._primary_firemode:set_visible(self._main_player and primary_ammo <= 999);
+		end
+
+		if alive(self._secondary_firemode) and alive(secondary_total_text) and secondary_total_text:right() > 0 then
+			local x = secondary_total_text:right() - position;
+			local y = secondary_total_text:center_y();
+
+			self._secondary_firemode:set_size(image_size, image_size);
+			self._secondary_firemode:set_center(x, y);
+			self._secondary_firemode:set_visible(self._main_player and secondary_ammo <= 999);
+		end
+	end
 end
 
 function MUITeammate:set_callsign(id)
@@ -1314,8 +1371,11 @@ function MUITeammate.load_options(force_load)
 	MUITeammate._muiAmmo = data.mui_ammo or 1;
 	MUITeammate._muiFire = data.mui_player_firemode_display ~= false;
 	--if MUITeammate._muiColor == nil then
-	MUITeammate._muiColor = MUIMenu._data.mui_custom_textures ~= false;
-	MUITeammate._muiHpClr = data.mui_hp_color == true;
+	MUITeammate._muiColor = MUIMenu._data.mui_custom_textures == true;
+	MUITeammate._muiHealthNr = MUIMenu._data.mui_enable_health_numbers == true;
+	MUITeammate._muiLeech = MUIMenu._data.mui_disable_leech_support == true;
+	MUITeammate._muiRevC = MUIMenu._data.mui_enable_center_team_revives == true;
+	MUITeammate._muiCoco = MUIMenu._data.mui_team_coco_stack ~= false;
 	--end
 	
 	--end
@@ -1471,8 +1531,8 @@ function MUITeammate:set_health(data)
 			-- if data.no_hint then
 			self._custardy = true;
 			-- self:set_revives(4);
-			self._info_list:set_visible_panel(self._muiRevS and not self._main_player and self._revives_icon, false);
-			self._info_list:set_visible_panel(self._muiStam and self._main_player and self._revives and self._revives < 2 and self._stamina_icon:visible() and self._stamina_icon, false);
+			--self._info_list:set_visible_panel(self._muiRevS and not self._main_player and self._revives_icon, false);
+			--self._info_list:set_visible_panel(self._muiStam and self._main_player and self._revives and self._revives < 2 and self._stamina_icon:visible() and self._stamina_icon, false);
 		-- else
 			-- self._crimedad = true;
 		-- end
@@ -1486,7 +1546,7 @@ function MUITeammate:set_health(data)
 		end
 	--end
 
-	if managers.player:has_activate_temporary_upgrade("temporary", "copr_ability") and self._id == HUDManager.PLAYER_PANEL and not MUIMenu._data.mui_disable_leech_support then
+	if managers.player:has_activate_temporary_upgrade("temporary", "copr_ability") and self._id == HUDManager.PLAYER_PANEL and not self._muiLeech then
 		local static_damage_ratio = managers.player:upgrade_value_nil("player", "copr_static_damage_ratio");
 		hp:stop();
 
@@ -1635,7 +1695,7 @@ function MUITeammate:countdown(time)
 	o:set_text(format("%02d", old_t));
 	local r, b = Color.red, o:color();
 	while t > 0 do
-	if MUIMenu._data.mui_enable_health_numbers and (self._health_numbers:visible() or self._armor_numbers:visible()) then
+	if self._muiHealthNr and (self._health_numbers:visible() or self._armor_numbers:visible()) then
 		self._health_numbers:hide();
 		self._armor_numbers:hide();
 	end
@@ -1652,7 +1712,7 @@ function MUITeammate:countdown(time)
 			end
 		end
 	end
-	if MUIMenu._data.mui_enable_health_numbers then
+	if self._muiHealthNr then
 		self._health_numbers:show();
 		self._armor_numbers:show(); 
 	end
@@ -1680,7 +1740,7 @@ function MUITeammate:update_absorb()
     end
 end
 function MUITeammate:update_delayed_damage()
-	if not MUIMenu._data.mui_enable_health_numbers and self._delayed_old + self._delayed_damage ~= 0 then
+	if not self._muiHealthNr and self._delayed_old + self._delayed_damage ~= 0 then
 		self:set_radial_overlay(self._delayed_health, self._delayed_shield, self._delayed_damage or 0);
 		self._delayed_old = self._delayed_damage;
 	end
@@ -1700,7 +1760,7 @@ function MUITeammate:set_radial_overlay(roh, ros, val)
 end
 
 function MUITeammate:set_copr_indicator(enabled, static_damage_ratio)
-	if MUIMenu._data.mui_disable_leech_support then
+	if self._muiLeech then
 		return;
 	end
 
@@ -1765,7 +1825,7 @@ end
 
 function MUITeammate:set_info_meter(data)
 	local rim = self._info_meter;
-	local visible = MUIMenu._data.mui_team_coco_stack or self._main_player
+	local visible = self._muiCoco or self._main_player
 	rim:set_visible(visible and data.total > 0);
 	self:set_radial(rim, data.current, data.max, self._muiHPASPD);
 end
@@ -1797,16 +1857,14 @@ function MUITeammate:_create_primary_weapon_firemode()
         panel:remove(self._primary_firemode);
     end
 
-    self._primary_firemode = panel:text({
+    self._primary_firemode = panel:bitmap({
         name = "firemode",
-		visible = false,
-        text = "",
-        font = self._font,
-        font_size = 16,
-        color = Color.white,
-        align = "center",
-        vertical = "center",
-        layer = 2
+        visible = self._muiFire and self._main_player,
+        texture = "mui_textures/semi",
+        layer = 2,
+        w = 16,
+        h = 16,
+        color = Color.white
     });
 end
 
@@ -1818,16 +1876,14 @@ function MUITeammate:_create_secondary_weapon_firemode()
         panel:remove(self._secondary_firemode);
     end
 
-    self._secondary_firemode = panel:text({
+    self._secondary_firemode = panel:bitmap({
         name = "firemode",
-        text = "",
-		visible = false,
-        font = self._font,
-        font_size = 16,
-        color = Color.white,
-        align = "center",
-        vertical = "center",
-        layer = 2
+		visible = self._muiFire and self._main_player,
+        texture = "mui_textures/semi",
+        layer = 2,
+        w = 16,
+        h = 16,
+        color = Color.white
     });
 end
 
@@ -1837,21 +1893,40 @@ function MUITeammate:recreate_weapon_firemode()
 end
 
 function MUITeammate:set_weapon_firemode(id, firemode)
-    local target;
-    if id == 2 then
-        target = self._primary_firemode;
-    elseif id == 1 then
-        target = self._secondary_firemode;
-    end
+    local target = (id == 2 and self._primary_firemode) or self._secondary_firemode;
     if not alive(target) then return; end
 
-    local text = "";
+    local texture = "mui_textures/semi";
+
     if firemode == "auto" then
-        text = "|||";
+        texture = "mui_textures/auto";
     elseif firemode == "burst" then
-        text = "||";
+        texture = "mui_textures/burst";
     elseif firemode == "single" then
-        text = "|";
+        texture = "mui_textures/semi";
     end
-    target:set_text(text);
+
+    target:set_image(texture);
+end
+
+function MUITeammate:set_condition(icon_data, text)
+	local player = self._main_player and self._muiRevL;
+	local team = self._muiRevS and not self._main_player;
+	local visible = team or player;
+	if icon_data == "mugshot_normal" then
+
+		self._condition_icon:set_visible(false);
+		self._info_list:set_visible_panel(visible and self._revives_icon, self._revives == 1);
+	else
+		local icon, texture_rect = tweak_data.hud_icons:get_icon_data(icon_data);
+
+		self._condition_icon:set_visible(true);
+		self._condition_icon:set_image(icon, texture_rect[1], texture_rect[2], texture_rect[3], texture_rect[4]);
+		self._info_list:set_visible_panel(self._muiRevC and not self._main_player and self._revives_icon, false);
+		
+		if icon_data == "mugshot_in_custody" then
+			self._info_list:set_visible_panel(visible and self._revives_icon, false);
+			self._info_list:set_visible_panel(self._muiStam and self._main_player and self._revives and self._revives < 2 and self._stamina_icon:visible() and self._stamina_icon, false);
+		end
+	end
 end

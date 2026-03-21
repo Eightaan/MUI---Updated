@@ -19,12 +19,6 @@
 		},
 		{
 			"type" : "toggle",
-			"id" : "mui_hp_color",
-			"callback" : "mui_toggle_callback",
-			"default_value" : false
-		},
-		{
-			"type" : "toggle",
 			"id" : "mui_name_upper",
 			"title" : "mui_upper_text_title",
 			"description" : "mui_upper_text_desc",

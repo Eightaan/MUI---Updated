@@ -296,7 +296,7 @@ function MUISuspicion.load_options(force_load)
 	MUISuspicion._muiVPos = data.mui_suspicion_v_pos or 2;
 	MUISuspicion._muiRot = data.mui_suspicion_rot or 0;
 	MUISuspicion._muiFont = data.mui_font_pref or 4;
-	MUISuspicion._muiColor = MUIMenu._data.mui_custom_textures ~= false;
+	MUISuspicion._muiColor = MUIMenu._data.mui_custom_textures == true;
 	MUISuspicion._options = true;
 end
 

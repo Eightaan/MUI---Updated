@@ -10,6 +10,9 @@
 		<file :name="fearless.texture" :path="fearless.texture"/>
 		<file :name="health.texture" :path="health.texture"/>
 		<file :name="shield.texture" :path="shield.texture"/>
+		<file :name="burst.texture" :path="burst.texture"/>
+		<file :name="semi.texture" :path="semi.texture"/>
+		<file :name="auto.texture" :path="auto.texture"/>
 		<file :name="rip.texture" :path="rip.texture"/>
 	</group>
 </assets>

@@ -72,7 +72,10 @@ function MUIPresent:dispose(index)
 end
 
 function MUIPresent:prepare(data)
-	local text = string.format("%s\n%s", upper(data.title), upper(data.text));
+	local title = data.title and upper(data.title);
+	local desc = upper(data.text or "");
+	local text = title and (title .. "\n" .. desc) or desc;
+
 	return text, self._muiSound and data.event;
 end
 
