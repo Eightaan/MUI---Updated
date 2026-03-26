@@ -904,6 +904,8 @@ function MUITeammate:resize_wait()
 end
 
 function MUITeammate:add_special_equipment(data)
+    if data and data.id == "carrystacker" then return; end
+
 	local spcSize = self._mui_size/3;
 	local panel = self._special_list:panel({ name = data.id, h = spcSize, w = spcSize });
 
@@ -947,6 +949,7 @@ function MUITeammate:add_special_equipment(data)
 end
 
 function MUITeammate:remove_special_equipment(id)
+    if id == "carrystacker" then return; end
 	self._special_list:set_state_id(id, 0);
 end
 

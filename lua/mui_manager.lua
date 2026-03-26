@@ -450,6 +450,7 @@ if 	pdoclass("MUIPresent", "lua/mui_present.lua") and
 		self._hud_presenter = MUIPresent:new(hud);
 	end
 end
+
 --------------------- MUI_HINT ------------------------
 if 	pdoclass("MUIHint", "lua/mui_hint.lua") and
 	pdoclass("MUIPresentItem", "lua/mui_present_item.lua")  then

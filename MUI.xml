@@ -13,6 +13,7 @@
 				<post :hook_id="menumanager" :script_path="mui_menu.lua"/>
 
 				<group :script_path="setup.lua">
+					<post :hook_id="hud/hudchallengenotification"/>
 					<post :hook_id="statisticsmanager"/>
 					<post :hook_id="trademanager"/>
 					<post :hook_id="moneymanager"/>

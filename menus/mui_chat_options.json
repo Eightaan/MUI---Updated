@@ -17,7 +17,7 @@
 			"default_value" : 200,
 			"max" : 1200,
 			"min" : 50,
-			"step" : 1
+			"step" : 5
 		},
 		{
 			"type" : "slider",
@@ -38,8 +38,35 @@
 			"callback" : "mui_floored_callback",
 			"default_value" : 7,
 			"max" : 20,
+			"min" : 5,
+			"step" : 1
+		},
+		{
+			"type" : "slider",
+			"id" : "mui_chat_fade",
+			"title" : "mui_fade_title",
+			"description" : "mui_fade_desc",
+			"callback" : "mui_floored_callback",
+			"default_value" : 7,
+			"max" : 20,
 			"min" : 1,
 			"step" : 1
+		},
+		{
+			"type" : "divider",
+			"size" : "10"
+		},
+		{
+			"type" : "toggle",
+			"id" : "mui_chat_time",
+			"callback" : "mui_toggle_callback",
+			"default_value" : false
+		},
+		{
+			"type" : "toggle",
+			"id" : "mui_mouse_support",
+			"callback" : "mui_toggle_callback",
+			"default_value" : false
 		},
 		{
 			"type" : "divider",

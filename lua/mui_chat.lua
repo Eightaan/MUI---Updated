@@ -32,11 +32,6 @@ function MUIChat:init(ws, hud)
 		name = "output_panel",
 		layer = 1
 	});
-
-	self._scroll_panel = self._output_panel:panel({
-		name = "scroll_panel"
-	});
-
 	self._output_panel:panel({
 		name = "output_bg"
 	});
@@ -44,12 +39,6 @@ function MUIChat:init(ws, hud)
 		alpha = 0,
 		name = "input_panel",
 		layer = 1
-	});
-	self._input_panel:rect({
-		name = "focus_indicator",
-		visible = false,
-		color = Color.white:with_alpha(0.2),
-		layer = 0
 	});
 	self._input_panel:text({
 		name = "say",
@@ -85,6 +74,9 @@ function MUIChat:init(ws, hud)
 	self._input_panel:panel({
 		name = "input_bg"
 	});
+	self._scroll_offset = 0;
+	self._line_counts = {};
+	self._total_lines = 0;
 	self:resize();
 end
 
@@ -110,22 +102,48 @@ function MUIChat:update_caret()
 	self:set_blinking(s == e and self._focus);
 end
 
--- /// temporary(?) fix for scroll ///
 function MUIChat:set_scroll_indicators(force_update_scroll_indicators)
 end
+
 function MUIChat:scroll_up()
+	local s10 = self._muiSize / 10;
+	local space = self._muiLSpacing;
+	local step = s10 + space;
+	local max_scroll = math.max(0, self._total_lines * step - self._muiRows * step);
+
+	if self._scroll_offset < max_scroll then
+		self._scroll_offset = self._scroll_offset + step;
+		self._scroll_offset = math.floor(self._scroll_offset / step) * step;
+		self._scroll_offset = math.min(self._scroll_offset, max_scroll);
+		self:resize_lines();
+	end
 end
+
 function MUIChat:scroll_down()
+	local s10 = self._muiSize / 10;
+	local space = self._muiLSpacing;
+	local step = s10 + space;
+
+	if self._scroll_offset > 0 then
+		self._scroll_offset = self._scroll_offset - step;
+		self._scroll_offset = math.ceil(self._scroll_offset / step) * step;
+		self._scroll_offset = math.max(0, self._scroll_offset);
+		self:resize_lines();
+	end
 end
+
 function MUIChat:set_output_alpha(alpha)
-	self._panel:child("output_panel"):set_alpha(alpha)
+	self._panel:child("output_panel"):set_alpha(alpha);
 end
 
 function MUIChat.load_options(force_load)
 	if MUIChat._options and not force_load then return; end
 
 	local data = MUIMenu._data;
-	MUIChat._muiSize = data.mui_chat_size or 200;
+	local size = data.mui_chat_size or 200;
+
+	size = math.floor(size / 5 + 0.5) * 5;
+	MUIChat._muiSize = size;
 	MUIChat._muiLSpacing = math.floor(MUIChat._muiSize *0.008);
 	MUIChat._muiAlpha = (data.mui_chat_alpha or 100)*0.01;
 	MUIChat._muiHMargin = data.mui_chat_h_marg or 60;
@@ -133,6 +151,9 @@ function MUIChat.load_options(force_load)
 	MUIChat._muiHPos = data.mui_chat_h_pos or 1;
 	MUIChat._muiVPos = data.mui_chat_v_pos or 3;
 	MUIChat._muiRows = data.mui_chat_rows or 7;
+	MUIChat._muiFade = data.mui_chat_fade or 7;
+	MUIChat._muiCTime = data.mui_chat_time == true;
+	MUIChat._muiMouse = data.mui_mouse_support == true;
 	MUIChat._muiFont = data.mui_font_pref or 4;
 	MUIChat._options = true;
 end
@@ -199,42 +220,76 @@ end
 
 function MUIChat:resize_lines()
 	local s10 = self._muiSize / 10;
-	local rows = self._muiRows;
 	local space = self._muiLSpacing;
-
-	local lines = self._lines;
-	local len = #lines;
 	local out = self._output_panel;
-	local width = out:w();
+	local panel_w = out:w();
+	local panel_h = out:h();
 
-	local overflow = len - rows;
-	local sibling = self._input_panel;
-	for i = len, 1, -1 do
-		local line = lines[i];
-		if i < overflow then
-			out:remove(line);
-			remove(lines, i);
-		else
-			Figure(line):rect(s10, width):attach(sibling, 1, space);
-			sibling = line;
-		end
+	local y = - self._scroll_offset;
+
+	for i = #self._lines, 1, -1 do
+		local line = self._lines[i];
+		local count = self._line_counts[line] or 1;
+		local line_count = count * s10;
+
+		Figure(line):rect(s10, panel_w);
+		
+		line:set_h(line_count);
+		line:set_bottom(panel_h - y);
+
+		y = y + line_count + space;
 	end
 end
 
 function MUIChat:receive_message(name, message, color, icon)
 	local output_panel = self._panel:child("output_panel");
+	local t = managers.game_play_central and managers.game_play_central:get_heist_timer() or 0;
+	local hours = math.floor(t / 3600);
+	local minutes = math.floor(t / 60) % 60;
+	local seconds = math.floor(t % 60);
+
+	local time_text = "";
+	if self._muiCTime then
+		if hours > 0 then
+			time_text = string.format("%02d:%02d:%02d ", hours, minutes, seconds);
+		else
+			time_text = string.format("%02d:%02d ", minutes, seconds);
+		end
+	end
+
+
 	local line = output_panel:text({
-		text = name .. ": " .. message,
+		text = time_text .. name .. ": " .. message,
 		font = self._font,
 		wrap = true,
 		word_wrap = true,
 		layer = 0
 	});
-	local len = utf8.len(name) + 1;
+	
+	local w = output_panel:w();
+	local s10 = self._muiSize / 10;
+	local space = self._muiLSpacing;
+	local rows = self._muiRows;
+	local step = s10 + space;
+	Figure(line):rect(s10, w);
+
+	local time_len = utf8.len(time_text);
+	local name_len = utf8.len(name) + 1;
 	local total_len = utf8.len(line:text());
-	line:set_range_color(0, len, color);
-	line:set_range_color(len, total_len, Color.white);
+
+	line:set_range_color(0, time_len, Color(0.7, 0.7, 0.7));
+	line:set_range_color(time_len, time_len + name_len, color);
+	line:set_range_color(time_len + name_len, total_len, Color.white);
+	
+	local count = line:number_of_lines();
+
+	self._line_counts[line] = count;
+	self._total_lines = self._total_lines + count;
 	insert(self._lines, line);
+
+	local max_scroll = math.max(0, self._total_lines * step - rows * step);
+	self._scroll_offset = math.min(self._scroll_offset, max_scroll);
+
 	self:resize_lines();
 	if not self._focus then
 		output_panel:stop();
@@ -257,5 +312,105 @@ function MUIChat.toggle_layer(force_state)
 		chating:show();
 		ArmStatic.create_corners(chating._panel);
 		chating:set_layer(1200);
+	end
+end
+
+function MUIChat:enter_key_callback()
+	self._scroll_offset = 0;
+	self:resize_lines();
+	self.super.enter_key_callback(self);
+end
+
+function MUIChat:esc_key_callback()
+	self:disconnect_mouse();
+	self._scroll_offset = 0;
+	self:resize_lines();
+	self.super.esc_key_callback(self);
+end
+
+function MUIChat:_animate_fade_output()
+    local wait_t = self._muiFade;
+    local fade_t = 1;
+    local t = 0;
+
+    while wait_t > t do
+        local dt = coroutine.yield();
+        t = t + dt;
+    end
+    t = 0;
+	
+    while fade_t > t do
+        local dt = coroutine.yield();
+        t = t + dt;
+        self:set_output_alpha(1 - t / fade_t);
+    end
+
+    self:set_output_alpha(0);
+end
+
+function MUIChat:connect_mouse()
+	if self._mouse_connected then return; end
+	self._mouse_connected = true;
+	managers.mouse_pointer:use_mouse({mouse_press = callback(self, self, "_mouse_press"), id = "mui_chat_mouse" });
+end
+
+function MUIChat:disconnect_mouse()
+	if not self._mouse_connected then return; end
+	managers.mouse_pointer:remove_mouse("mui_chat_mouse");
+	self._mouse_connected = nil;
+end
+
+function MUIChat:_mouse_press(o, button, x, y)
+	if button == Idstring("mouse wheel up") then
+		self:scroll_up();
+	elseif button == Idstring("mouse wheel down") then
+		self:scroll_down();
+	end
+end
+
+function MUIChat:_on_focus()
+	if self._focus then return; end
+
+	local out = self._panel:child("output_panel");
+
+	out:stop();
+	out:animate(callback(self, self, "_animate_show_output"), out:alpha());
+	self._input_panel:stop();
+	self._input_panel:animate(callback(self, self, "_animate_show_component"));
+
+	self._focus = true;
+	self._ws:connect_keyboard(Input:keyboard());
+
+	if _G.IS_VR then
+		Input:keyboard():show();
+	end
+
+	self._input_panel:key_press(callback(self, self, "key_press"));
+	self._input_panel:key_release(callback(self, self, "key_release"));
+	self._enter_text_set = false;
+
+	self:update_caret();
+	if self._muiMouse then
+		self:connect_mouse();
+		managers.mouse_pointer:set_pointer_image("arrow");
+	end
+end
+
+function MUIChat:_loose_focus()
+	if not self._focus then return; end
+
+	self._focus = false;
+	self._ws:disconnect_keyboard();
+	self._input_panel:key_press(nil);
+	self._input_panel:enter_text(nil);
+	self._input_panel:key_release(nil);
+	self._panel:child("output_panel"):stop();
+	self._panel:child("output_panel"):animate(callback(self, self, "_animate_fade_output"));
+	self._input_panel:stop();
+	self._input_panel:animate(callback(self, self, "_animate_hide_input"));
+
+	self:update_caret();
+	if self._muiMouse then
+		self:disconnect_mouse();
 	end
 end
