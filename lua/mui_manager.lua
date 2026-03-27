@@ -484,6 +484,12 @@ if pdoclass("MUIChat", "lua/mui_chat.lua") then
 		if self._hud_chat_access then self._hud_chat_access:remove(); end
 		self._hud_chat_access = MUIChat:new(ws, hud);
 	end
+	
+	if m_data.mui_mouse_support then
+		Hooks:PostHook(HUDManager, "setup_endscreen_hud", "MUISetup_endscreen_hud", function (self, ...)
+			self._hud_chat_ingame:disconnect_mouse();
+		end)
+	end
 end
 --------------------- MUI_INTERACT ------------------------
 

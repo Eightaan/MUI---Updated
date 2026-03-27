@@ -244,7 +244,7 @@ end
 function MUIChat:receive_message(name, message, color, icon)
 	local output_panel = self._panel:child("output_panel");
 	local t = managers.game_play_central and managers.game_play_central:get_heist_timer() or 0;
-	local hours = math.floor(t / 3600);
+	local hours = math.floor(t / (60*60));
 	local minutes = math.floor(t / 60) % 60;
 	local seconds = math.floor(t % 60);
 
