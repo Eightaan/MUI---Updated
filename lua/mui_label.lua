@@ -203,7 +203,6 @@ function MUILabel:set_action_progress(type_index, enabled, tweak_data_id, timer,
 	end
 end
 
-
 function MUILabel:get_name()
 	local result = "";
 	if self._muiClean ~= 5  then

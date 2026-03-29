@@ -167,12 +167,6 @@
 			"default_value" : false
 		},
 		{
-			"type" : "toggle",
-			"id" : "mui_challanges",
-			"callback" : "mui_toggle_callback",
-			"default_value" : false
-		},
-		{
 			"type" : "divider",
 			"size" : "10"
 
