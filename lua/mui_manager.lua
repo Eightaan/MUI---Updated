@@ -387,7 +387,7 @@ if pdoclass("MUIWaypoint", "lua/mui_waypoint.lua") then
 					end
 					local margin = max(btmp:size());
 					panel:set_center(vx(data.current_position), vy(data.current_position));
-					panel:set_alpha(dist_alpha * data._ads_fade)
+					panel:set_alpha(dist_alpha * data._ads_fade);
 					arrw:set_center(btmp:center_x() + direction.x * margin, btmp:center_y() + direction.y * margin);
 					local angle = math.X:angle(direction) * math.sign(direction.y);
 					arrw:set_rotation(angle);
@@ -411,7 +411,7 @@ if pdoclass("MUIWaypoint", "lua/mui_waypoint.lua") then
 						vset(data.current_position, wp_pos);
 					end
 					panel:set_center(vx(data.current_position), vy(data.current_position));
-					panel:set_alpha(dist_alpha * data._ads_fade)
+					panel:set_alpha(dist_alpha * data._ads_fade);
 					if dist then dist:set_text(format("%.0f", dirlen / 100) .. "m"); end
 				end
 			end
