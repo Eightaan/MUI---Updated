@@ -236,6 +236,8 @@
 	"mui_wp_distant_act_desc" : "As the player distance to waypoint increases to Distant Range, gradually;\ndisabled, fade in, fade out.",
 	"mui_wp_distant_rng_title" : "Distant Range",
 	"mui_wp_distant_rng_desc" : "Range (in metres) at which waypoint will either be\nfully opaque or transparent, depending on Distant Action.",
+	"mui_ads_title" : "ADS Fade",
+	"mui_ads_desc" : "Waypoints will fade away when aiming down the sight and fade back into view when not aiming.",
 	
 	"mui_custody_options_title" : "Custody",
 	"mui_custody_options_desc" : "Customizations for the custody panel.",

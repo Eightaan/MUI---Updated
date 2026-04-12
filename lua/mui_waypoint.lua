@@ -118,6 +118,7 @@ function MUIWaypoint.load_options(force_load)
 	MUIWaypoint._muiDistAct = data.mui_wp_distant_act or 1;
 	MUIWaypoint._muiDistRng = data.mui_wp_distant_rng or 50;
 	MUIWaypoint._muiFont = data.mui_font_pref or 4;
+	MUIWaypoint._muiAds = data.mui_ads == true;
 	MUIWaypoint._options = true;
 end
 

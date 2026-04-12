@@ -308,11 +308,16 @@ if pdoclass("MUIWaypoint", "lua/mui_waypoint.lua") then
 
 		local muiAction = MUIWaypoint._muiDistAct;
 		local muiRange = MUIWaypoint._muiDistRng;
+		local muiAds = MUIWaypoint._muiAds;
 		local a = muiAction == 2 and 0 or 1;
 		local end_a = 1 - a;
 
 		local cam = managers.viewport:get_current_camera();
 		if not cam or not first_wp then return; end
+
+		local player = managers.player:local_player();
+		local aiming = player and player:movement() and player:movement():current_state() and player:movement():current_state():in_steelsight();
+
 		local hud_panel = first_wp.parent;
 		local ws = self._saferect;
 
@@ -346,7 +351,14 @@ if pdoclass("MUIWaypoint", "lua/mui_waypoint.lua") then
 				vnorm(wp_dir_normalized);
 				local dot = vdot(wp_cam_forward, wp_dir_normalized);
 				local dirlen = wp_dir:length();
-				if muiAction > 1 then panel:set_alpha( lerp( a, end_a, clamp( (dirlen - muiRange * 10) / (muiRange * 90), 0, 1 ) ) ); end
+
+				local target_alpha = (muiAds and aiming) and 0.2 or 1;
+				data._ads_fade = data._ads_fade or 1;
+				data._ads_fade = math.lerp(data._ads_fade, target_alpha, dt * 8);
+
+				local dist_alpha = 1;
+				if muiAction > 1 then dist_alpha = lerp( a, end_a, clamp( (dirlen - muiRange * 10) / (muiRange * 90), 0, 1 ) ); end
+
 				if dot < 0 or hud_panel:outside(vx(wp_pos), vy(wp_pos)) then
 					if data.state ~= 4 then
 						data.state = 4;
@@ -375,6 +387,7 @@ if pdoclass("MUIWaypoint", "lua/mui_waypoint.lua") then
 					end
 					local margin = max(btmp:size());
 					panel:set_center(vx(data.current_position), vy(data.current_position));
+					panel:set_alpha(dist_alpha * data._ads_fade)
 					arrw:set_center(btmp:center_x() + direction.x * margin, btmp:center_y() + direction.y * margin);
 					local angle = math.X:angle(direction) * math.sign(direction.y);
 					arrw:set_rotation(angle);
@@ -398,6 +411,7 @@ if pdoclass("MUIWaypoint", "lua/mui_waypoint.lua") then
 						vset(data.current_position, wp_pos);
 					end
 					panel:set_center(vx(data.current_position), vy(data.current_position));
+					panel:set_alpha(dist_alpha * data._ads_fade)
 					if dist then dist:set_text(format("%.0f", dirlen / 100) .. "m"); end
 				end
 			end

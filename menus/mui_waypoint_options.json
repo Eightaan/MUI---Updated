@@ -67,6 +67,12 @@
 			"step" : 1
 		},
 		{
+			"type" : "toggle",
+			"id" : "mui_ads",
+			"callback" : "mui_toggle_callback",
+			"default_value" : false
+		},
+		{
 			"type" : "divider",
 			"size" : "10"
 		},
