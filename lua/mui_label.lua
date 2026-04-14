@@ -192,8 +192,21 @@ function MUILabel:set_action_progress(type_index, enabled, tweak_data_id, timer,
 	else
 		self:set_action_text(4, tweak_data_id);
 
+		interact:stop();
 		interact_s:stop();
 		self.action:stop();
+
+		interact:set_visible(false);
+		interact:set_alpha(0);
+	
+		interact_s:set_visible(false);
+		interact_s:set_alpha(0);
+	
+		self.action:set_visible(false);
+		self.action:set_alpha(0);
+
+		interact_s:set_visible(true);
+		self.action:set_visible(true);
 
 		interact_s:set_alpha(end_a);
 		self.action:set_alpha(end_a);
@@ -272,7 +285,6 @@ function MUILabel:resize()
 	
 	Figure({bag, num}):view(carry):shape(s33):attach(name, 2, margin);
 end
-
 
 function MUILabel.toggle_layer(force_state)
 	local name_labels = managers.hud._hud.name_labels;

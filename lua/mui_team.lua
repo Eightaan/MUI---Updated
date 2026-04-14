@@ -54,6 +54,9 @@ local function MUIResized(self)
 		self._radial_health_panel:child("radial_shield"):show();
 		if self._damage_indicator then self._damage_indicator:show(); end
 		if self._radial_health_fill then self._radial_health_fill:show(); end
+		if self._radial_rip then self._radial_rip:show(); end
+		if self._delayed_health then self._delayed_health:show(); end
+		if self._delayed_shield then self._delayed_shield:show(); end
 		if self._health_numbers then self._health_numbers:hide(); end
 		if self._armor_numbers then self._armor_numbers:hide(); end
 		return;
@@ -61,6 +64,9 @@ local function MUIResized(self)
 
 	self._radial_health_panel:child("radial_health"):hide();
 	self._radial_health_panel:child("radial_shield"):hide();
+	if self._radial_rip then self._radial_rip:hide(); end
+	if self._delayed_health then self._delayed_health:hide(); end
+	if self._delayed_shield then self._delayed_shield:hide(); end
 	if self._radial_health_fill then self._radial_health_fill:hide(); end
 	if self._damage_indicator then self._damage_indicator:hide(); end
 
@@ -792,6 +798,7 @@ function MUITeammate:resize()
 	local size = main and self._muiSizeL or self._muiSizeS;
 	local alpha = main and self._muiAlphaL or self._muiAlphaS;
 	local s33, s66 = size/3, size/1.5;
+	local s22 = s33-5;
 	local sTimer = main and s33 or s66
 	local sAmmo = size * (main and 1.5 or 0.75);
 	local dock = main and self._muiSpcLD or self._muiSpcSD;
@@ -845,7 +852,7 @@ function MUITeammate:resize()
 	Figure(timer):shape(sTimer):leech(condition):align(2);
 
 	if self._muiRevC and not self._muiHealthNr and not self._main_player then
-		Figure(info):shape(size/3):leech(condition):align(2):spank(s33);
+		Figure(info):shape(s22):leech(condition):align(2):spank(s22);
 	else
 		Figure(info):shape(s66, s33):leech(player):align(3, 1):spank(s33);
 	end
@@ -1549,7 +1556,7 @@ function MUITeammate:set_health(data)
 		end
 	--end
 
-	if managers.player:has_activate_temporary_upgrade("temporary", "copr_ability") and self._id == HUDManager.PLAYER_PANEL and not self._muiLeech then
+	if managers.player:has_activate_temporary_upgrade("temporary", "copr_ability") and self._id == HUDManager.PLAYER_PANEL and not (self._muiLeech or self._muiColor) then
 		local static_damage_ratio = managers.player:upgrade_value_nil("player", "copr_static_damage_ratio");
 		hp:stop();
 
@@ -1600,7 +1607,7 @@ end
 
 function MUITeammate:set_stored_health(shr)
 	local rip = self._radial_rip;
-	if self._main_player then
+	if self._main_player and not self._muiHealthNr then
 		if shr > 0 then rip:show(); end
 		self:set_radial(rip, shr, 1, self._muiHPASPD);
 	end
@@ -1732,7 +1739,7 @@ function MUITeammate:update_absorb()
     local player = self._main_player and self._muiAbsL
     local team = self._muiAbsS and not self._main_player
     local visible = team or player
-    if visible and self._absorb_old + self._absorb_active_amount ~= 0 then
+    if visible and self._absorb_old + self._absorb_active_amount ~= 0 and not self._muiHealthNr then
         self._absorb_health:show();
         self._absorb_shield:show();
         self:set_radial_overlay(self._absorb_health, self._absorb_shield, self._absorb_active_amount or 0);
@@ -1763,7 +1770,7 @@ function MUITeammate:set_radial_overlay(roh, ros, val)
 end
 
 function MUITeammate:set_copr_indicator(enabled, static_damage_ratio)
-	if self._muiLeech then
+	if self._muiLeech or self._muiColor then
 		return;
 	end
 
@@ -1783,7 +1790,7 @@ function MUITeammate:set_copr_indicator(enabled, static_damage_ratio)
 		copr_overlay_panel:clear();
 		copr_overlay_panel:set_visible(enabled);
 
-		if enabled then
+		if enabled and not self._muiHealthNr then
 			local num_notches = math.ceil(1 / static_damage_ratio);
 			local rotation = nil;
 			local cx, cy = copr_overlay_panel:center();
@@ -1829,7 +1836,7 @@ end
 function MUITeammate:set_info_meter(data)
 	local rim = self._info_meter;
 	local visible = self._muiCoco or self._main_player
-	rim:set_visible(visible and data.total > 0);
+	rim:set_visible(not self._muiHealthNr and visible and data.total > 0);
 	self:set_radial(rim, data.current, data.max, self._muiHPASPD);
 end
 
