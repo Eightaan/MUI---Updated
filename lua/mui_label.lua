@@ -212,7 +212,7 @@ function MUILabel:set_action_progress(type_index, enabled, tweak_data_id, timer,
 		self.action:set_alpha(end_a);
 
 		fade(interact_s, 0);
-		fade(self.action, 0);	
+		fade(self.action, 0);
 	end
 end
 
