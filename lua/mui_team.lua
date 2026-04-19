@@ -798,7 +798,7 @@ function MUITeammate:resize()
 	local size = main and self._muiSizeL or self._muiSizeS;
 	local alpha = main and self._muiAlphaL or self._muiAlphaS;
 	local s33, s66 = size/3, size/1.5;
-	local s22 = s33-5;
+	local sRevive = s33/1.2;
 	local sTimer = main and s33 or s66
 	local sAmmo = size * (main and 1.5 or 0.75);
 	local dock = main and self._muiSpcLD or self._muiSpcSD;
@@ -852,7 +852,7 @@ function MUITeammate:resize()
 	Figure(timer):shape(sTimer):leech(condition):align(2);
 
 	if self._muiRevC and not self._muiHealthNr and not self._main_player then
-		Figure(info):shape(s22):leech(condition):align(2):spank(s22);
+		Figure(info):shape(sRevive):leech(condition):align(2):spank(sRevive);
 	else
 		Figure(info):shape(s66, s33):leech(player):align(3, 1):spank(s33);
 	end
