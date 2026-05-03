@@ -1306,13 +1306,12 @@ function MUITeammate:redisplay_name(force)
 		name = "";
 	elseif not waiting and clean == 4 and self:criminal() then
 		name = managers.localization:text("menu_" .. self:criminal().name);
-	elseif (clean == 3) or (clean == 2 and name:len() > 19) then
+	elseif (clean == 3) or (clean == 2 and name:len() > 19) and self:criminal() then
 		name = ArmStatic.clean_name(name);
 		name = name:len() > 0 and name or managers.localization:text("menu_" .. self:criminal().name);
 		if not self._main_player then
 			local name_len = name:len();
 			local name_font = size / math.min(math.max(3, name_len / 6), 5); -- Dynamic scaling of font size
-
 			self._name:set_font_size(name_font);
 		end
 	else
