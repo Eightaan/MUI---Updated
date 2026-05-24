@@ -77,17 +77,18 @@ if pdoclass("MUITeammate", "lua/mui_team.lua") and
 			panel:add_panel();
 		end
 
-		local function align_clbk()
+		--local function align_clbk()
+		self._mui_align_clbk = function()
 			if not alive(tunnel(self._teammate_panels, self.PLAYER_PANEL, "_panel")) then
 				return false;
 			end
-			if TPocoHud3 then team:set_callback(callback(MUITeammate, MUITeammate, "ph_align")); end
+			if PocoHud3 then team:set_callback(callback(MUITeammate, MUITeammate, "ph_align")); end
 			MUITeammate.align_panels();
 
 			return true;
 		end
 		MUITeammate:redisplay_panel()
-		ArmStatic.retrying_clbk("MUIManagerAlignTeammatesPanel", align_clbk);
+		ArmStatic.retrying_clbk("MUIManagerAlignTeammatesPanel", self._mui_align_clbk);
 	end
 
 	function HUDManager:_create_waiting_legend()
@@ -162,6 +163,15 @@ if pdoclass("MUITeammate", "lua/mui_team.lua") and
 	function HUDManager:set_max_stamina(val)
 		self._teammate_panels[self.PLAYER_PANEL]:set_max_stamina(val);
 	end
+	------------------- POCO_COMP ------------------------
+	HUDManager._mui_base.update = HUDManager.update;
+	function HUDManager:update(...)
+		if PocoHud3 then -- Awful way to handle it but for now it seems to be the only way to keep things in place
+			self._mui_align_clbk();
+		end
+		return HUDManager._mui_base.update(self, ...);
+	end
+	------------------------------------------------------
 end
 --------------------- MUI_VOICE ------------------------
 if 	pdoclass("MUIVoice", "lua/mui_voice.lua") and

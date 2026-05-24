@@ -1224,54 +1224,51 @@ function MUITeammate.align_panels()
 	team:set_margin(gap);
 	team:reposition();
 	ArmStatic.align_corners(team);
-	MUITeammate.ph_update();
 end
 
---------------------- POCO_COMP ------------------------
+------------------- POCO_COMP ------------------------
 function MUITeammate.ph_align()
-	--The main PocoHUD3 class name appears to have changed to this at some point.
-	--And might as well check if PocoHud3Class exists as well while we're at it.
-	if not TPocoHud3 or not PocoHud3Class then return end
+	if not PocoHud3 or not PocoHud3Class then
+		return
+	end
 
-	local team = managers.hud._mui_team;
 	local mates = managers.hud._teammate_panels;
 	local players = HUDManager.PLAYER_PANEL;
-	local xOff, yOff = 0, 0;
+
+	local xOff, yOff, xOffTeam, Offset = 0, 0, 0, 20;
 
 	local pho = PocoHud3Class.O;
 	if pho then
 		local bottom = pho:get("playerBottom");
-		xOff, yOff = bottom.offsetX or 0, bottom.offset or 0;
+		if bottom then
+			xOff, yOff, xOffTeam = bottom.offsetX or 0, bottom.offset or 0, bottom.offsetXTeam or 0;
+		end
 	end
 
 	for i = players, 1, -1 do
-		local mate = mates[i];
-		local ph = mate:ph_panel();
-		if ph then
-			local panel = mate._panel;
+		local mate = mates and mates[i];
+		local ph = mate and mate:ph_panel();
+		local panel = mate and mate._panel;
+
+		if ph and alive(ph) and panel and alive(panel) then
 			local x, y = panel:world_position();
 			local w, h = panel:size();
-			ph:set_world_position(x + (w - ph:w()) * 0.5 + xOff, y + h + yOff);
+
+			local isMe = mate._main_player
+			local teamOffset = isMe and 0 or xOffTeam;
+			ph:set_world_position(x + (w - ph:w()) * 0.6 + xOff + teamOffset);
+			ph:set_bottom(y + h + yOff + Offset);
 		end
 	end
 end
 
 function MUITeammate:ph_panel()
-	if not self._ph and not self._ai and TPocoHud3 then
+	if (not self._ph or not alive(self._ph)) and not self._ai and PocoHud3 then
 		local peer_id = self._peer_id or (self._main_player and ArmStatic.tunnel(managers, "network", "session", "local_peer", "id"));
-		self._ph = peer_id and TPocoHud3["pnl_" .. peer_id];
+		self._ph = peer_id and PocoHud3["pnl_" .. peer_id];
 	end
-	return self._ph;
-end
 
-function MUITeammate.ph_update()
-	if not Poco then return end
-	DelayedCalls:Add("mui_fix_delayed_call_1", 0.1, function()
-		PocoHud3 = nil;
-		DelayedCalls:Add("mui_fix_delayed_call_2", 0.1, function()
-			PocoHud3 = nil;
-		end)
-	end)
+	return self._ph;
 end
 ------------------------------------------------------
 
@@ -1337,7 +1334,6 @@ function MUITeammate:redisplay_panel()
 	if visible == self._visible then return; end
 	self._visible = visible;
 	self._parent:set_visible_panel(self._panel, visible);
-	self.ph_update();
 end
 
 

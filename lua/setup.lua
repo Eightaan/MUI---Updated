@@ -74,13 +74,14 @@ elseif RequiredScript == "lib/managers/moneymanager" then
 
 --------------------- SETUP_CUSTODY_PANEL ----------------------
 elseif RequiredScript == "lib/managers/trademanager" then
+	local custody_enabled = MUIMenu and MUIMenu:ClassEnabled("MUICustody")
 	Hooks:PostHook(TradeManager, 'on_player_criminal_death', "MUI_on_player_criminal_death", function(self, criminal_name, ...)
 		if criminal_name == managers.criminals:local_character_name() then
 			--Resets the trade delay time for the trade delay notification, unrelated to the custody panel	
 			managers.money:ResetCivKills();
 			--Make sure the custody panel is visible when entering custody
 			local custody = managers.hud and managers.hud._hud_player_custody;
-			if custody then
+			if custody and custody_enabled then
 				custody:show(false);
 			end
 		end
@@ -88,7 +89,8 @@ elseif RequiredScript == "lib/managers/trademanager" then
 
 	Hooks:PostHook(TradeManager, "criminal_respawn", "MUI_criminal_respawn", function(self, pos, rotation, respawn_criminal)
 		--Make sure the custody panel is hidden when leaving custody as the local player as host
-		if respawn_criminal and respawn_criminal.id == managers.criminals:local_character_name() then
+		local custody_enabled = MUIMenu and MUIMenu:ClassEnabled("MUICustody")
+		if custody_enabled and respawn_criminal and respawn_criminal.id == managers.criminals:local_character_name() then
 			local custody = managers.hud and managers.hud._hud_player_custody;
 			if custody then
 				custody:hide(false);
