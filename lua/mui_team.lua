@@ -1050,7 +1050,7 @@ function MUITeammate:redisplay_ammo(index)
 		
 		local s33 = self._mui_size/3;
 		local image_size = s33/1.9;
-		local position = s33/4.2;
+		local position = s33/6;
 		
 		local primary_ammo;
 		local secondary_ammo;
