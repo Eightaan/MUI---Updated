@@ -398,7 +398,7 @@ end
 
 function MUIChat:_loose_focus()
 	if not self._focus then return; end
-
+	self._key_pressed = false;
 	self._focus = false;
 	self._ws:disconnect_keyboard();
 	self._input_panel:key_press(nil);
