@@ -149,28 +149,10 @@ if pdoclass("MUITeammate", "lua/mui_team.lua") and
 		self._teammate_panels[id]:set_ammo_amount_by_type(selection_index, max_clip, current_clip, current_left, max_left);
 	end
 	
-function HUDManager:set_mugshot_voice(id, active)
-    log("[MUI] set_mugshot_voice() " .. tostring(id) .. " " .. tostring(active))
-
-    if not id or id > #self._teammate_panels then
-        return
-    end
-
-    self._teammate_panels[id]:set_talking(active)
-end
-
-	-- function HUDManager:set_mugshot_voice(id, active)
-		-- local panel_id;
-		-- for _, data in pairs(managers.criminals:characters()) do
-			-- if data.data.mugshot_id == id then
-				-- panel_id = data.data.panel_id;
-				-- break
-			-- end
-		-- end
-		-- if panel_id then
-			-- self._teammate_panels[panel_id]:set_talking(active);
-		-- end
-	-- end
+	function HUDManager:set_mugshot_voice(id, active)
+		if not id or id > #self._teammate_panels then return; end
+		self._teammate_panels[id]:set_talking(active);
+	end
 
 	HUDManager._mui_base.set_stamina_value = HUDManager.set_stamina_value;
 	function HUDManager:set_stamina_value(val)
