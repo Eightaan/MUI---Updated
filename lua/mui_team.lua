@@ -257,6 +257,7 @@ function MUITeammate:create_info_list(parent)
 		name = "info_list",
 		align = 1,
 		direction = 1,
+		order = 2,
 		aspd = 0.5
 	});
 	self._info_list = panel;
@@ -1928,6 +1929,7 @@ function MUITeammate:set_condition(icon_data, text)
 		self._condition_icon:set_visible(true);
 		self._condition_icon:set_image(icon, texture_rect[1], texture_rect[2], texture_rect[3], texture_rect[4]);
 		self._info_list:set_visible_panel(self._muiRevC and not self._main_player and self._revives_icon, false);
+		self._info_list:set_visible_panel(self._muiRevC and not self._main_player and self._talk_icon, false);
 		
 		if icon_data == "mugshot_in_custody" then
 			self._info_list:set_visible_panel(visible and self._revives_icon, false);

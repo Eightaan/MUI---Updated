@@ -347,10 +347,20 @@ function MenuItemCustomizeController.reload(self, row_item, node)
 end
 ]]
 
+-- MenuManager._mui_base = { push_to_talk = MenuManager.push_to_talk };
+-- function MenuManager.push_to_talk(self, enabled)
+	-- if managers.hud then
+		-- managers.hud:set_mugshot_voice(HUDManager.PLAYER_PANEL, enabled);
+	-- end
+	-- self._mui_base.push_to_talk(self, enabled);
+-- end
 MenuManager._mui_base = { push_to_talk = MenuManager.push_to_talk };
 function MenuManager.push_to_talk(self, enabled)
-	if managers.hud then
-		managers.hud:set_mugshot_voice(HUDManager.PLAYER_PANEL, enabled);
+	if managers.hud and managers.hud._teammate_panels then
+		local panel = managers.hud._teammate_panels[HUDManager.PLAYER_PANEL];
+		if panel then
+			panel:set_talking(enabled);
+		end
 	end
 	self._mui_base.push_to_talk(self, enabled);
 end

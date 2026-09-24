@@ -149,9 +149,29 @@ if pdoclass("MUITeammate", "lua/mui_team.lua") and
 		self._teammate_panels[id]:set_ammo_amount_by_type(selection_index, max_clip, current_clip, current_left, max_left);
 	end
 	
+	-- Old voice chat code, seems to be causing issues..
+	-- function HUDManager:set_mugshot_voice(id, active)
+		-- if not id or id > #self._teammate_panels then return; end
+		-- self._teammate_panels[id]:set_talking(active);
+	-- end
+
 	function HUDManager:set_mugshot_voice(id, active)
-		if not id or id > #self._teammate_panels then return; end
-		self._teammate_panels[id]:set_talking(active);
+		if not id or not self._hud or not self._hud.mugshots then return; end
+		local peer_id;
+
+		for _, data in pairs(self._hud.mugshots) do
+			if data.id == id then
+				peer_id = data.peer_id;
+				break;
+			end
+		end
+		if not peer_id or not managers.criminals then return; end
+
+		local character_data = managers.criminals:character_data_by_peer_id(peer_id);
+		if not character_data or not character_data.panel_id then return; end
+
+		local panel = self._teammate_panels and self._teammate_panels[character_data.panel_id];
+		if panel then panel:set_talking(active); end
 	end
 
 	HUDManager._mui_base.set_stamina_value = HUDManager.set_stamina_value;
