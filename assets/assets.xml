@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
 <assets base_path="assets/" load="startup">
 	<group name="mui_textures/" path="assets/">
+	
 		<file :name="stealth_exclam.texture" :path="stealth_exclam.texture"/>
+		<file :name="colored_health.texture" :path="colored_health.texture"/>
 		<file :name="absorb_health.texture" :path="absorb_health.texture"/>
 		<file :name="absorb_shield.texture" :path="absorb_shield.texture"/>
 		<file :name="absorb_stack.texture" :path="absorb_stack.texture"/>

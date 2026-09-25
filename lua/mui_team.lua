@@ -305,6 +305,16 @@ function MUITeammate:create_radial_panel(parent)
 		end
 		return fallback;
 	end
+	
+	local function health_tex()
+		if self._muiColor then
+			return "mui_textures/health";
+		elseif self._muiColoredHealth then
+			return "mui_textures/colored_health";
+		end
+
+		return "guis/textures/pd2/hud_health";
+	end
 
 	local panel = parent:panel({
 		name = "radial_health_panel",
@@ -315,20 +325,20 @@ function MUITeammate:create_radial_panel(parent)
 	local radial_health = panel:bitmap({
 		name = "radial_health",
 		color = Color.black,
-		texture = tex("health", "guis/textures/pd2/hud_health"),
+		texture = health_tex(),
 		render_template = "VertexColorTexturedRadial",
 		blend_mode = "add",
 		layer = 2
 	});
 	self._radial_health = radial_health;
 
-	if self._muiColor then
+	if self._muiColor or self._muiColoredHealth then
 		radial_health:set_blend_mode("sub");
 
 		self._radial_health_fill = panel:bitmap({
 			name = "radial_health_fill",
 			color = self._prime_color,
-			texture = "mui_textures/health",
+			texture = self._muiColor and "mui_textures/health" or "mui_textures/colored_health",
 			blend_mode = "add",
 			layer = 1
 		});
@@ -1095,7 +1105,7 @@ function MUITeammate:set_callsign(id)
 	self._comp_color = self._prime_color;
 	self._condition_timer:set_color(self._prime_color);
 
-	if self._muiColor then
+	if self._muiColor or self._muiColoredHealth then
 		local rhf = tunnel_c(self._player_panel, "radial_health_panel", "radial_health_fill");
 		if rhf then rhf:set_color(color); end
 	end
@@ -1378,6 +1388,7 @@ function MUITeammate.load_options(force_load)
 	MUITeammate._muiFire = data.mui_player_firemode_display ~= false;
 	--if MUITeammate._muiColor == nil then
 	MUITeammate._muiColor = MUIMenu._data.mui_custom_textures == true;
+	MUITeammate._muiColoredHealth = MUIMenu._data.mui_colored_health == true;
 	MUITeammate._muiHealthNr = MUIMenu._data.mui_enable_health_numbers == true;
 	MUITeammate._muiLeech = MUIMenu._data.mui_disable_leech_support == true;
 	MUITeammate._muiRevC = MUIMenu._data.mui_enable_center_team_revives == true;
@@ -1596,7 +1607,7 @@ function MUITeammate:set_health(data)
 		self:rot_radial(rip, dc, dt, self._muiHPASPD);
 	end
 
-	self:set_radial(hp, (self._muiColor and dt - dc or dc), dt, self._muiHPASPD);
+	self:set_radial(hp, ((self._muiColor or self._muiColoredHealth) and dt - dc or dc), dt, self._muiHPASPD);
 	self:update_delayed_damage();
 	self:update_absorb();
 end

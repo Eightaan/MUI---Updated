@@ -282,5 +282,7 @@
 	"mui_mouse_support_title" : "Mouse Support",
 	"mui_mouse_support_desc" : "Enable mouse scrolling in the chat.",
 	"mui_custom_textures_title" : "Custom Hud textures",
-	"mui_custom_textures_desc" : "Enable the custom MUI textures for the hud.\n[REQUIRES MAP RELOAD]"
+	"mui_custom_textures_desc" : "Enable the custom MUI textures for the hud.\n[REQUIRES MAP RELOAD]",
+	"mui_colored_health_text_title" : "Colored Player Health",
+	"mui_colored_health_text_desc" : "Colors the player health circles according to their peer color."
 }

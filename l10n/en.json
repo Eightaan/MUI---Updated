@@ -225,6 +225,8 @@
 	
 	"mui_upper_text_title" : "Upper case",
 	"mui_upper_text_desc" : "Convert text to upper case.",
+	"mui_colored_health_text_title" : "Colored Player Health",
+	"mui_colored_health_text_desc" : "Colors the player health circles according to their peer color.",
 	
 	"mui_waypoint_options_title" : "Waypoints",
 	"mui_waypoint_options_desc" : "Customizations for all waypoint panels.",
