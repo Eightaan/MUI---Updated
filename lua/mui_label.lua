@@ -272,9 +272,9 @@ function MUILabel:resize()
 	end
 	
 	local function view(fgr) fgr:view(alpha); end
-	Figure(panel):shape(size * 5 + margin * 4, size + margin * 2):progeny(view);
+	Figure(panel):shape(size * 7 + margin * 4, size + margin * 2):progeny(view);
 	
-	Figure(name):rect(s33):cusp(size*4):align(2);
+	Figure(name):rect(s33):cusp(size*6):align(2);
 	Figure(infamy):view(xxv):shape(s16, s33):attach(name, 4);
 	Figure(stop):shape(s16, s33):attach(name, 4);
 	local anchor = xxv and infamy or name;
