@@ -779,6 +779,11 @@ function MUITeammate:set_waiting(waiting, peer)
 		self:restore_name();
 	end
 	self:set_gear_visible(not waiting and (my_peer and my_peer:unit()));
+	if waiting then
+		for _, panel in ipairs(self._info_list:children()) do
+			self._info_list:set_visible_panel(panel, false)
+		end
+	end
 	self:redisplay_panel();
 	fade(wp, waiting and 1 or 0, 1);
 end
@@ -1345,6 +1350,7 @@ function MUITeammate:redisplay_panel()
 	if visible == self._visible then return; end
 	self._visible = visible;
 	self._parent:set_visible_panel(self._panel, visible);
+	self._parent:reposition();
 end
 
 
@@ -1497,6 +1503,7 @@ function MUITeammate:remove_panel()
 	self._delayed_health:set_color(Color.black);
 	self._delayed_shield:set_color(Color.black);
 	self._info_list:set_visible_panel(self._muiRevS and not self._main_player and self._revives_icon, false);
+	self._info_list:set_visible_panel(self._talk_icon, false);
 	if self._radial_rip then self._radial_rip:hide(); end
 	self:set_cheater(false);
 	self:set_info_meter({

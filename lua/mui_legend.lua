@@ -56,7 +56,10 @@ function MUILegend:animate(opt)
 	local panel = self._panel;
 	local teammate_panel = teammate._panel;
 
-	local targ_x, targ_y = teammate_panel:world_left() + teammate_panel:w() / 2  - panel:w() / 2, teammate_panel:world_top() - panel:h();
+	local targ_x = teammate_panel:world_left() + teammate_panel:w() / 2 - panel:w() / 2;
+	local targ_y = teammate_panel:world_top() - panel:h();
+	if MUITeammate._muiDir == 2 then targ_x = targ_x - 50; end
+
 	local orig_x, orig_y = targ_x - panel:w(), targ_y;
 
 	panel:set_alpha(0);
