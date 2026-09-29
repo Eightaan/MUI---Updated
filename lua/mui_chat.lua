@@ -221,6 +221,7 @@ end
 function MUIChat:resize_lines()
 	local s10 = self._muiSize / 10;
 	local space = self._muiLSpacing;
+	local step = s10 + space;
 	local out = self._output_panel;
 	local panel_w = out:w();
 	local panel_h = out:h();
@@ -230,14 +231,14 @@ function MUIChat:resize_lines()
 	for i = #self._lines, 1, -1 do
 		local line = self._lines[i];
 		local count = self._line_counts[line] or 1;
-		local line_count = count * s10;
+		local line_height = count * step - space;
 
 		Figure(line):rect(s10, panel_w);
-		
-		line:set_h(line_count);
+
+		line:set_h(line_height);
 		line:set_bottom(panel_h - y);
 
-		y = y + line_count + space;
+		y = y + line_height + space;
 	end
 end
 

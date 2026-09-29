@@ -13,7 +13,7 @@ if RequiredScript == "lib/managers/statisticsmanager" then
 
 	Hooks:PostHook(StatisticsManager, "killed", "MUI_StatisticsManager_killed", function(self, data, ...)
 		if civies[data.name] then
-			return
+			return;
 		end
 		local bullets = data.variant == "bullet";
 		local melee = data.variant == "melee" or data.weapon_id and tweak_data.blackmarket.melee_weapons[data.weapon_id];

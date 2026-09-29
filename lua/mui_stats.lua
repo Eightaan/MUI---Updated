@@ -309,7 +309,7 @@ end
 function MUIStats:tracked_achievements()
     local panel = self._objectives_panel;
     local description = panel:child("description");
-    if not description then return end
+    if not description then return; end
 
     local tracked = managers.achievment:get_tracked_fill() or {};
     local lines = {};
@@ -346,7 +346,7 @@ end
 function MUIStats:mutators()
 	local panel = self._objectives_panel;
 	local description = panel:child("description");
-	if not description then return end
+	if not description then return; end
 
 	local mutator_names = {};
 	for i, active_mutator in ipairs(managers.mutators:active_mutators()) do
@@ -393,7 +393,7 @@ function MUIStats:apply_mutator_font_size(description, total_lines)
 	};
 
 	local s33 = self._muiSize / 3;
-	if total_lines <= 5 then description:set_font_size(s33); return end
+	if total_lines <= 5 then description:set_font_size(s33); return; end
 
 	local extra_lines = math.min(total_lines, 9) - 5;
 	local scale_factor = scale_map[extra_lines] or 0.55;
