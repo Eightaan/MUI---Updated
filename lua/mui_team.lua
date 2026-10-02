@@ -1479,18 +1479,43 @@ function MUITeammate:set_revives(revives)
 end
 
 -- Find and/or return criminal for panel
+-- function MUITeammate:criminal()
+	-- if not self._criminal then
+		-- local criminals = managers.criminals:characters();
+		-- local peer_id = self._peer_id or (self._main_player and ArmStatic.tunnel(managers, "network", "session", "local_peer", "id"));
+		-- for i=1, #criminals do
+			-- local criminal = criminals[i];
+			-- if (criminal.peer_id ~= nil and criminal.peer_id == peer_id) or (criminal.data and criminal.data.panel_id == self._id) then
+				-- self._criminal = criminal;
+			-- end
+		-- end
+	-- end
+	-- return self._criminal;
+-- end
 function MUITeammate:criminal()
-	if not self._criminal then
-		local criminals = managers.criminals:characters();
-		local peer_id = self._peer_id or (self._main_player and ArmStatic.tunnel(managers, "network", "session", "local_peer", "id"));
-		for i=1, #criminals do
-			local criminal = criminals[i];
-			if (criminal.peer_id ~= nil and criminal.peer_id == peer_id) or (criminal.data and criminal.data.panel_id == self._id) then
-				self._criminal = criminal;
-			end
-		end
-	end
-	return self._criminal;
+    local criminals = managers.criminals:characters();
+    local peer_id = self._peer_id;
+
+    if self._main_player then
+        local session = managers.network:session();
+        peer_id = session and session:local_peer() and session:local_peer():id();
+    end
+
+    if peer_id then
+        for _, criminal in ipairs(criminals) do
+            if criminal.peer_id == peer_id then
+                return criminal;
+            end
+        end
+
+        return nil;
+    end
+
+    for _, criminal in ipairs(criminals) do
+        if criminal.data and criminal.data.panel_id == self._id then
+            return criminal;
+        end
+    end
 end
 
 function MUITeammate:remove_panel()
