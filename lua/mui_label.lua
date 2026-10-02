@@ -124,8 +124,6 @@ function MUILabel:init(id, label_data)
 		color = crim_color
 	});
 	self:resize();
-	self.bag:set_x(self.bag_number:x() + 10)
-	self.bag:set_y(self.bag_number:y() - 1)
 end
 
 function MUILabel.load_options(force_load)
@@ -284,6 +282,8 @@ function MUILabel:resize()
 	Figure({prog, succ}):shape(s66 + margin):attach(anchor, 4, margin);
 	
 	Figure({bag, num}):view(carry):shape(s33):attach(name, 2, margin);
+	bag:set_x(num:x() + s33);
+	bag:set_y(num:y() - 1);
 end
 
 function MUILabel.toggle_layer(force_state)

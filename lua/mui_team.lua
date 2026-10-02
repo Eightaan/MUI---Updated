@@ -172,6 +172,12 @@ function MUITeammate:create_panel(parent)
 		vertical = "bottom",
 		font = self._font
 	});
+	self._name_carry_icon = panel:bitmap({
+		name = "name_carry_icon",
+		texture = "guis/textures/pd2/hud_bag",
+		color = self._prime_color,
+		visible = false
+	});
 	self._name_bg = panel:panel({name = "name_bg", w = 0, h = 0, visible = false}); -- Poco comp
 	self._special_list = AnimatedList:new(panel, {name = "special_equipment", align = 2});
 
@@ -815,7 +821,7 @@ function MUITeammate:resize()
 	local alpha = main and self._muiAlphaL or self._muiAlphaS;
 	local s33, s66 = size/3, size/1.5;
 	local sRevive = s33/1.2;
-	local sTimer = main and s33 or s66
+	local sTimer = main and s33 or s66;
 	local sAmmo = size * (main and 1.5 or 0.75);
 	local dock = main and self._muiSpcLD or self._muiSpcSD;
 	local jtfy = main and self._muiSpcLJ or self._muiSpcSJ;
@@ -864,6 +870,7 @@ function MUITeammate:resize()
 	special:reposition();
 
 	Figure(name):shape(player:w() - s33, s33):leech(player):attach(carry:visible() and carry, 2);
+	Figure(self._name_carry_icon):shape(s33):leech(name):align(1, 2)
 	Figure(condition):shape(size):leech(player):attach(carry, 3);
 	Figure(timer):shape(sTimer):leech(condition):align(2);
 
@@ -902,6 +909,7 @@ function MUITeammate:resize()
 		if self._health_numbers then self._health_numbers:set_visible(false); end
 		if self._armor_numbers then self._armor_numbers:set_visible(false); end
 	end
+	self:update_carry_icon();
 end
 
 function MUITeammate:resize_wait()
@@ -1105,6 +1113,7 @@ function MUITeammate:set_callsign(id)
 	self._name:set_color(color);
 	self._carry_icon:set_color(color);
 	self._interact_success:set_color(color);
+	self._name_carry_icon:set_color(color);
 
 	--local comp_color = self._muiColor and ArmStatic.complement(color):with_alpha(1) or Color.black;
 	self._comp_color = self._prime_color;
@@ -1546,12 +1555,21 @@ function MUITeammate:remove_panel()
 	self._criminal = nil;
 	self._taken = nil;
 	self:redisplay_panel();
+	self:update_carry_icon();
 end
 
 function MUITeammate:position_name()
 	local player = self._player_panel;
 	local carry = self._carry_panel;
+	local remove_name = (self._main_player and self._muiCleanL or self._muiCleanS) == 5;
+
 	Figure(self._name):leech(player):attach(carry:visible() and carry, 2);
+
+	if remove_name then
+		Figure(self._name_carry_icon):leech(self._name):align(1, 2);
+	end
+
+	self:update_carry_icon();
 end
 
 function MUITeammate:set_carry_info()
@@ -1561,6 +1579,13 @@ end
 function MUITeammate:remove_carry_info()
 	self._carry_panel:set_visible(false);
 	self:position_name();
+end
+function MUITeammate:update_carry_icon()
+    local remove_name = (self._main_player and self._muiCleanL or self._muiCleanS) == 5;
+    local visible = self._carry_panel:visible();
+
+    self._name_carry_icon:set_visible(remove_name and visible);
+    self._carry_icon:set_visible(not remove_name);
 end
 
 function MUITeammate:set_health(data)
