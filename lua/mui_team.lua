@@ -870,7 +870,7 @@ function MUITeammate:resize()
 	special:reposition();
 
 	Figure(name):shape(player:w() - s33, s33):leech(player):attach(carry:visible() and carry, 2);
-	Figure(self._name_carry_icon):shape(s33):leech(name):align(1, 2)
+	Figure(self._name_carry_icon):shape(s33):leech(name):align(1, 2);
 	Figure(condition):shape(size):leech(player):attach(carry, 3);
 	Figure(timer):shape(sTimer):leech(condition):align(2);
 
