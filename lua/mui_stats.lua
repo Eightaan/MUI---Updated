@@ -849,17 +849,35 @@ end
 	carry.value_multiplier is old data apparently, do not use.
 ]]--
 	
+-- function MUIStats:count_gage_units()
+	-- local gage, all, active = managers.gage_assignment, 0, 0;
+	-- if gage and gage._spawned_units then
+		-- for _, unit in pairs(gage._spawned_units) do
+			-- all = all +1;
+			-- if alive(unit) and unit:base()._picked_up ~= true then
+				-- active = active + 1;
+			-- end
+		-- end
+	-- end
+	-- return all, active;
+-- end
+
 function MUIStats:count_gage_units()
-	local gage, all, active = managers.gage_assignment, 0, 0;
-	if gage and gage._spawned_units then
-		for _, unit in pairs(gage._spawned_units) do
-			all = all +1;
-			if alive(unit) and unit:base()._picked_up ~= true then
-				active = active + 1;
-			end
-		end
-	end
-	return all, active;
+    local gage = managers.gage_assignment
+    local remaining = 0
+    local stars = managers.job:current_difficulty_stars()
+
+    local max_packages = math.min((stars + 1) * 2, 10)
+
+    if gage and gage._spawned_units then
+        for _, unit in pairs(gage._spawned_units) do
+            if alive(unit) and unit:base()._picked_up ~= true then
+                remaining = remaining + 1
+            end
+        end
+    end
+
+    return max_packages, remaining
 end
 
 function MUIStats:set_control_info(data)
