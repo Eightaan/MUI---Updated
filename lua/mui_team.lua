@@ -1620,7 +1620,7 @@ function MUITeammate:set_health(data)
 		end
 	--end
 
-	if managers.player:has_activate_temporary_upgrade("temporary", "copr_ability") and self._id == HUDManager.PLAYER_PANEL and not (self._muiLeech or self._muiColor) then
+	if managers.player:has_activate_temporary_upgrade("temporary", "copr_ability") and self._id == HUDManager.PLAYER_PANEL and not (self._muiLeech or self._muiColor or self._muiColoredHealth) then
 		local static_damage_ratio = managers.player:upgrade_value_nil("player", "copr_static_damage_ratio");
 		hp:stop();
 
@@ -1834,7 +1834,7 @@ function MUITeammate:set_radial_overlay(roh, ros, val)
 end
 
 function MUITeammate:set_copr_indicator(enabled, static_damage_ratio)
-	if self._muiLeech or self._muiColor then
+	if self._muiLeech or self._muiColor or self._muiColoredHealth then
 		return;
 	end
 
