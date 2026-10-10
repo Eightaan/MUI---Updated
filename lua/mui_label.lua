@@ -282,8 +282,8 @@ function MUILabel:resize()
 	Figure({prog, succ}):shape(s66 + margin):attach(anchor, 4, margin);
 	
 	Figure({bag, num}):view(carry):shape(s33):attach(name, 2, margin);
-	bag:set_x(num:x() + s33);
-	bag:set_y(num:y() - 1);
+	num:set_x(bag:x() + s33);
+	num:set_y(bag:y() + 1);
 end
 
 function MUILabel.toggle_layer(force_state)
