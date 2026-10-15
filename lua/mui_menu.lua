@@ -354,11 +354,12 @@ end
 	-- end
 	-- self._mui_base.push_to_talk(self, enabled);
 -- end
+
 MenuManager._mui_base = { push_to_talk = MenuManager.push_to_talk };
 function MenuManager.push_to_talk(self, enabled)
 	if managers.hud and managers.hud._teammate_panels then
 		local panel = managers.hud._teammate_panels[HUDManager.PLAYER_PANEL];
-		if panel then
+		if panel and panel.set_talking then
 			panel:set_talking(enabled);
 		end
 	end
