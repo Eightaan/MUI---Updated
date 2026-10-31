@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<mod
+    name = "MUI"
+    description = "Minimalistic, scalable UI mod aimed at experienced players."
+	author = "Armithaig; previously maintained by The Trashmann; Currently maintained by Freyah and Eightan"
+	contact = "mui@amaranth.red"
+	version = "44.3.1"
+	blt_version = "2"
+	color = "0 255 255"
+	image = "img/mui.png"
+>
+    <update
+        provider = "mws"
+        identifier = "46681"
+        patchnotes = "https://modworkshop.net/mod/46681?tab=changelog"
+    />
+	<!-- Main code -->
+	<hooks script_path="lua/">
+		<group hook_id="lib/">
+			<group :hook_id="setups/gamesetup">
+				<pre :script_path="static.lua"/>
+				<pre :script_path="figure.lua"/>
+			</group>
+
+			<group :hook_id="managers/">
+				<post :hook_id="hudmanagerpd2" :script_path="mui_manager.lua"/>
+				<post :hook_id="menumanager" :script_path="mui_menu.lua"/>
+
+				<group :script_path="setup.lua">
+					<post :hook_id="hud/hudchallengenotification"/>
+					<post :hook_id="statisticsmanager"/>
+					<post :hook_id="trademanager"/>
+					<post :hook_id="moneymanager"/>
+				</group>
+			</group>
+		</group>
+	</hooks>
+
+	<!-- Custom Textures -->
+	<:include src="assets/assets.xml"/>
+</mod>
