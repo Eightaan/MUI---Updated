@@ -863,21 +863,16 @@ end
 -- end
 
 function MUIStats:count_gage_units()
-    local gage = managers.gage_assignment
-    local remaining = 0
     local stars = managers.job:current_difficulty_stars()
-
-    local max_packages = math.min((stars + 1) * 2, 10)
-
+    local gage, all, active = managers.gage_assignment, math.min((stars + 1) * 2, 10), 0
     if gage and gage._spawned_units then
         for _, unit in pairs(gage._spawned_units) do
             if alive(unit) and unit:base()._picked_up ~= true then
-                remaining = remaining + 1
+                active = active + 1
             end
         end
     end
-
-    return max_packages, remaining
+    return all, active
 end
 
 function MUIStats:set_control_info(data)

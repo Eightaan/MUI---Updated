@@ -4,7 +4,7 @@
     description = "Minimalistic, scalable UI mod aimed at experienced players."
 	author = "Armithaig; previously maintained by The Trashmann; Currently maintained by Freyah and Eightan"
 	contact = "mui@amaranth.red"
-	version = "44.3.1"
+	version = "44.3.2"
 	blt_version = "2"
 	color = "0 255 255"
 	image = "img/mui.png"
